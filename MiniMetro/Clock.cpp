@@ -1,6 +1,8 @@
 #include "Clock.h"
 
-Clock::Clock() {}
+Clock::Clock() {
+	myLoger = MyLogger::GetInstance();
+}
 
 void Clock::DrawDate(bool IsDay) {
 	TCHAR s[5];
@@ -37,31 +39,39 @@ void Clock::DrawDate(bool IsDay) {
 
 void Clock::DrawClockBackground() {
 	if (days & 1) { //黑夜
-		setcolor(BLACK);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw night background start");
+		setcolor(BLACK);    
 		setfillcolor(BLACK);
-		fillcircle(x, y, r);
-		setfillcolor(WHITE);
-		solidcircle(x, y, 2);
+		fillcircle(x, y, r);  //表盘
+		setfillcolor(WHITE);  
+		solidcircle(x, y, 2);  // 中心点
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw night background end");
 	}
 	else {
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day background start");
 		setcolor(BLACK);
 		setfillcolor(WHITE);
 		fillcircle(x, y, r);
 		setfillcolor(BLACK);
 		solidcircle(x, y, 2);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day background end");
 	}
 	if(days % 2 == 0) //新的一天开始
 		DrawDate(false);
 	DrawDate(true);
 	
-	
 }
 
 void Clock::DrawClockScale() {
-	if (days & 1)
+	if (days & 1) {
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw night clock'scale start");
 		setcolor(WHITE);
-	else
+	}
+	else {
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day clock'scale start");
 		setcolor(BLACK);
+	}
+		
 	for (int i = 1; i <= 60; i++) {
 		int x1 = static_cast<int>(x + (cos(i * (PI / 30))) * r);
 		int y1 = static_cast<int>(y - (sin(i * (PI / 30))) * r);
@@ -77,24 +87,23 @@ void Clock::DrawClockScale() {
 			y2 = static_cast<int>(y - (sin(i * (PI / 30))) * (r - 5));
 		}
 		line(x1, y1, x2, y2);
-		
 	}
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "draw  clock'scale end");
 }
 
 void Clock::DrawClockPointer() {
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "Clock starting...");
 	while (true) {
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "it's " << days << "day");
 		mu_draw.lock();
-		std::cout << "clock start!" << std::endl;
 		DrawClockBackground();
 		DrawClockScale();
 		mu_draw.unlock();
-
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day clock'pointer start");
 		for (int i = 1; i <= 60; i++) {
 			int x2 = static_cast<int>(x - (sin(i * (PI / 30))) * (r - 20));
 			int y2 = static_cast<int>(y + (cos(i * (PI / 30))) * (r - 20));
 
-			//double t = cos(i * (PI / 30));
-			//std::cout << x2 << ' ' << y2 << ' ' << t << std::endl;
 			mu_draw.lock();
 			if (days & 1) {
 				setcolor(WHITE);
@@ -119,8 +128,9 @@ void Clock::DrawClockPointer() {
 			}
 			mu_draw.unlock();
 		}
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day clock'pointer end");
 		days++;
-		std::cout << "clock end!" << std::endl;
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "Clock end...");
 	}
 }
 

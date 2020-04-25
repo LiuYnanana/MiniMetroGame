@@ -9,22 +9,20 @@
 #include "Clock.h"
 #include "Bridge.h"
 #include "SubwayHead.h"
+#include "MyLogger.h"
 
 std::mutex mu_draw;
 
 int main()
 {
-
-
-	freopen("log.txt", "w", stdout);
-
+	//freopen("log.txt", "w", stdout);
+	
 
 	//try {
 
 	Map map;
 	map.DrawMap("E:\\MiniMetro\\getMap\\river.txt", "E:\\MiniMetro\\getMap\\station.txt");
 
-	
 	SubwayHead subway_head;
 	subway_head.DrawSubwayHead();
 
@@ -51,7 +49,6 @@ int main()
 
 
 }
-
 
 
 

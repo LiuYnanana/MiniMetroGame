@@ -13,6 +13,7 @@
 #include <windows.h>
 #include "File.h"
 #include "graphics.h"
+#include "MyLogger.h"
 #include <iostream>
 
 extern std::mutex mu_draw;
@@ -54,7 +55,7 @@ private:
 	point_list riv_move, riv_old_position, riv_new_position;
 	std::map<int, bool> vis_station, vis_river, vis_station_shape;
 	std::vector<int> v_station_shape;
-	
+	MyLogger* myLoger = NULL;
 };
 
 

@@ -1,12 +1,12 @@
 #include "SubwayHead.h"
 
 
-SubwayHead::SubwayHead() {}
+SubwayHead::SubwayHead() {
+	myLoger = MyLogger::GetInstance();
+}
 
 void SubwayHead::DrawSubwayHead() {
-	
-	mu_draw.lock();
-	std::cout << "subwayHead start!" << std::endl;
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "start draw subwayHead");
 	setcolor(BLACK);
 	setfillcolor(WHITE);
 	fillcircle(x, y, r);
@@ -28,8 +28,8 @@ void SubwayHead::DrawSubwayHead() {
 
 	line(28, 419, 22, 426);
 	line(52, 419, 57, 426);
-	std::cout << "subwayHead end!" << std::endl;
-	mu_draw.unlock();
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "subwayHead is successfully drawn");
+
 }
 
 SubwayHead::~SubwayHead() {}

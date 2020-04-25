@@ -39,6 +39,9 @@
     <ClCompile Include="Bridge.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MyLogger.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h">
@@ -57,6 +60,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Bridge.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyLogger.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

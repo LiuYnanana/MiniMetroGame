@@ -99,10 +99,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions); _CRT_SECURE_NO_DEPRECATE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>E:\MiniMetro\MiniMetroGame\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\MiniMetro\MiniMetroGame\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);log4cplusD.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,6 +146,7 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MyLogger.cpp" />
     <ClCompile Include="SubwayHead.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="zhy.cpp" />
@@ -153,6 +157,7 @@
     <ClInclude Include="File.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="MyLogger.h" />
     <ClInclude Include="SubwayHead.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,8 @@
 #include "Map.h"
 
-Map::Map() {}
+Map::Map() {
+	myLoger = MyLogger::GetInstance();
+}
 Map::~Map() {}
 
 
@@ -14,8 +16,9 @@ void Map::GetStation(std::string station_path) {
 		sscanf_s(i.c_str(), "(%d, %d)", &x, &y);
 		int a = x * a1 / b1 + add_left;
 		int b = y * a2 / b2;
-		station.push_back(std::make_pair(a, b));
+		station.push_back(std::make_pair(a, b));  
 	}
+	LOG4CPLUS_INFO(myLoger->rootLog, "station number is " << station.size());
 } 
 
 void Map::GetRiver(std::string river_path) {
@@ -30,6 +33,7 @@ void Map::GetRiver(std::string river_path) {
 		int b = y * a1 / b1 + add_left;
 		river.push_back(std::make_pair(b, a));
 	}
+	LOG4CPLUS_INFO(myLoger->rootLog, "map river'points number is " << river.size());
 }
 
 
@@ -77,26 +81,30 @@ void Map::RemoveAdjacentPoint() {
 	for (auto i : t) {
 		station.push_back(i);
 	}
+	LOG4CPLUS_INFO(myLoger->rootLog, "after remove adjacent, station number is " << station.size());
 }
 
 void Map::DrawBackground() {
+	LOG4CPLUS_INFO(myLoger->rootLog, "start init graph and load image");
 	initgraph(x + add_left + add_right, y);	// 创建绘图窗口，大小为 640x480 像素
 	loadimage(NULL, background_path);
+	LOG4CPLUS_INFO(myLoger->rootLog, "init graph and load image successed!");
 }
 
 void Map::DrawRiver(std::string river_path) { 
 	GetRiver(river_path);
-	std::cout << river.size() << std::endl;
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "start draw river");
 	for (auto i : river) {
 		setfillcolor(RGB(174, 220, 252));
 		solidcircle(i.first, i.second, 1);
 	}
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "river is successfully drawn");
 }
 
 void Map::SetStationShapeNum() {
-	num_pentagram = 2; //一个椭圆
+	num_pentagram = 2; //一个五角星
 	num_fivangle = 1; //两个五边形
-	num_crisscross = 2; //两个扇形
+	num_crisscross = 2; //两个十字形
 	num_ractangle = 2; //两个正方形
 	num_circle = station.size() * 2 / 5;
 	num_triangle = station.size() - (num_pentagram + num_fivangle + num_crisscross + num_ractangle + num_circle);
@@ -106,31 +114,42 @@ void Map::SetStationShapeNum() {
 	num_shape[0] = num_ractangle;
 	num_shape[1] = num_circle;
 	num_shape[2] = num_triangle;
+
+	LOG4CPLUS_INFO(myLoger->rootLog, "the number of pentagram is " << num_pentagram);
+	LOG4CPLUS_INFO(myLoger->rootLog, "the number of fivangle is " << num_fivangle);
+	LOG4CPLUS_INFO(myLoger->rootLog, "the number of crisscross is " << num_crisscross);
+	LOG4CPLUS_INFO(myLoger->rootLog, "the number of ractangle is " << num_ractangle);
+	LOG4CPLUS_INFO(myLoger->rootLog, "the number of circle is " << num_circle);
+	LOG4CPLUS_INFO(myLoger->rootLog, "the number of triangle is " << num_triangle);
 }
 
 void Map::DrawStationShape(std::pair<int, int> pos) {
 	srand(time(NULL));
 	int k;
-	std::cout << cnt_appear_sta << std::endl;
 	if (cnt_appear_sta < 3) {
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this station is top three");
 		do {
 			k = rand() % 3;
-			std::cout << k << std::endl;
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "shape is " << k);
 		} while (vis_station_shape[k] == true);
-		
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "finally shape is " << k);
 		vis_station_shape[k] = true;
 	}
 	else if (cnt_appear_sta <= station.size() / 3) {
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this station is one third");
 		do {
 			k = rand() % 3 ;
-			std::cout << k << " " << num_shape[k] << std::endl;
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "shape is " << k);
 		} while (num_shape[k] == 0);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "finally shape is " << k);
 	}
 	else {
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this station is at last");
 		do {
 			k = rand() % 6;
-			std::cout << k << std::endl;
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "shape is " << k);
 		} while (num_shape[k] == 0);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "finally shape is " << k);
 	}
 
 	setlinecolor(BLACK);
@@ -142,11 +161,18 @@ void Map::DrawStationShape(std::pair<int, int> pos) {
 		v.push_back(y - 6);
 		v.push_back(x + 6);
 		v.push_back(y + 6);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is ractangle");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate(left-top, right-bottom): (" 
+			<< x - 6 << ", "<< y - 6 << "), (" 
+			<< x + 6 << ", " << y + 6 << ")" );
 	}
 	else if (k == 1) {  //圆
 		v.push_back(x);
 		v.push_back(y);
 		v.push_back(6);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is circle");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate(circle-center, radius): ("
+			<< x << ", " << y << "), 6");
 	}
 	else if (k == 2) { //三角形
 		v.push_back(x);
@@ -157,6 +183,12 @@ void Map::DrawStationShape(std::pair<int, int> pos) {
 
 		v.push_back(x + 6);
 		v.push_back(y + 4);
+
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is triangle");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
+			<< x << ", " << y - 8 << "), ("
+			<< x - 6 << ", " << y + 4 << "), ("
+		    << x + 6 << ", " << y + 4 << ")");
 	}
 	else if (k == 3) { //五角星
 		v.push_back(x);
@@ -177,6 +209,14 @@ void Map::DrawStationShape(std::pair<int, int> pos) {
 		v.push_back(x + 6);
 		v.push_back(y - 4);
 
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is pentagram");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
+			<< x << ", " << y - 8 << "), ("
+			<< x - 6 << ", " << y + 4 << "), ("
+			<< x + 6 << ", " << y + 4 << "), ("
+			<< x - 6 << ", " << y - 4 << "), ("
+			<< x << ", " << y + 8 << "), ("
+			<< x + 6 << ", " << y - 4 << ")");
 	}
 	else if (k == 4) { //120 53 十字形
 		v.push_back(x - 6);
@@ -188,6 +228,13 @@ void Map::DrawStationShape(std::pair<int, int> pos) {
 		v.push_back(y - 6);
 		v.push_back(x + 2);
 		v.push_back(y + 6);
+
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is crisscross");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
+			<< x - 6 << ", " << y - 2 << "), ("
+			<< x + 6 << ", " << y + 2 << "), ("
+			<< x - 2<< ", " << y - 6 << "), ("
+			<< x + 2 << ", " << y + 6 << ")");
 	}
 	else if (k == 5) { //五边形
 		v.push_back(x);
@@ -205,9 +252,18 @@ void Map::DrawStationShape(std::pair<int, int> pos) {
 		v.push_back(x + 6);
 		v.push_back(y - 2);
 
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is fivangle");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
+			<< x << ", " << y - 8 << "), ("
+			<< x - 6 << ", " << y - 2 << "), ("
+			<< x - 4 << ", " << y + 6 << "), ("
+			<< x - 6 << ", " << y - 4 << "), ("
+			<< x + 4 << ", " << y + 6 << "), ("
+			<< x + 6 << ", " << y - 2 << ")");
 	}
 	Graphics::DrawGraphics(k * 2 + 1, v);
 	num_shape[k]--;
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "the " << k << " shape left " << num_shape[k]);
 	v_station_shape.push_back(k);
 
 }
@@ -227,19 +283,20 @@ void Map::DrawStation(std::string station_path) {
 		int mod = min(sta_wait.size(), 3);
 		int i = rand() % mod;
 	
-		std::cout << "将第" << i << "个地铁站画在地图中" << std::endl;
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "the " << i << " station will be draw..");
 
 		mu_draw.lock();
 		DrawStationShape(sta_wait[i]);
 		mu_draw.unlock();
 
 		cnt_appear_sta++;
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "appeared station number is " << cnt_appear_sta);
 		sta_appear.push_back(sta_wait[i]);
 		sta_wait.erase(sta_wait.begin() + i);
 		
 		
 		int k = TimeInterval();
-		std::cout << k << std::endl;
+		LOG4CPLUS_INFO(myLoger->rootLog, "station appear time Interval is " << k << "ms");
 		Sleep(k * 10);
 	}
 

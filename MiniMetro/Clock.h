@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <easyx.h>
+#include "MyLogger.h"
 
 #define PI acos(-1)
 extern std::mutex mu_draw;
@@ -27,6 +28,7 @@ private:
 	int r = 28;
 	int days = 0;
 	std::mutex mu;
+	MyLogger* myLoger = NULL;
 
 };
 

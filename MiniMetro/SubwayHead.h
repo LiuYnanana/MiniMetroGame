@@ -4,9 +4,8 @@
 #include <graphics.h>
 #include <easyx.h>			
 #include <conio.h>
+#include "MyLogger.h"
 
-
-extern std::mutex mu_draw;
 
 class SubwayHead
 {
@@ -17,6 +16,7 @@ public:
 private:
 	int x = 40, y = 400, r = 34;
 	std::mutex mu_sub_head;
+	MyLogger* myLoger = NULL;
 
 };
 

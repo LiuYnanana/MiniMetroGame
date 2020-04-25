@@ -1,11 +1,11 @@
 #include "Bridge.h"
 
-Bridge::Bridge() {}
+Bridge::Bridge() {
+	myLoger = MyLogger::GetInstance();
+}
 
 void Bridge::DrawBridge() {
-
-	mu_draw.lock();
-	std::cout << "Bridge start!" << std::endl;
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "start draw bridge");
 	setcolor(BLACK);
 	setfillcolor(WHITE);
 	fillcircle(x, y, r); 
@@ -28,8 +28,7 @@ void Bridge::DrawBridge() {
 	line(29, 466, 29, 461);
 	line(51, 466, 51, 461);
 	line(40, 466, 40, 461);
-	std::cout << "bridge end!" << std::endl;
-	mu_draw.unlock();
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "bridge is successfully drawn");
 }
 
 Bridge::~Bridge() {}

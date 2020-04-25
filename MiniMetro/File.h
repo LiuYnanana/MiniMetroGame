@@ -3,13 +3,18 @@
 #include <vector>
 #include <fstream>
 #include <cassert>
-#include <ostream>
+#include <iostream>
+#include "MyLogger.h"
+
 class File
 {
 public:
 	File();
 	void ReadTxt(std::string, std::vector<std::string>& );
 	~File();
+private:
+	MyLogger* myLoger = NULL;
 };
+
 
 
