@@ -42,6 +42,12 @@
     <ClCompile Include="MyLogger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Track.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h">
@@ -63,6 +69,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MyLogger.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Track.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

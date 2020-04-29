@@ -43,7 +43,7 @@ public:
 private:
 	int a1 = 25, b1 = 64, a2 = 13, b2 = 32;
 	int add_left = 100, add_right = 100, add_down = 20;
-	int x = 2048 * a1 / b1, y = 1536 * a2 / b2 + add_down;
+	int x = 2048 * a1 / b1, y = 1536 * a2 / b2 + add_down; //x = 800 y = 624 + 20 = 644
 	int center_x = x / 2 + add_left, center_y = y / 2;
 	int num_ractangle, num_circle, num_triangle, num_fivangle, num_pentagram, num_crisscross, num_shape[10];
 	static const int cx = 548;

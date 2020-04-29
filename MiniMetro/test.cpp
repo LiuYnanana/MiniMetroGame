@@ -10,6 +10,7 @@
 #include "Bridge.h"
 #include "SubwayHead.h"
 #include "MyLogger.h"
+#include "Track.h"
 
 std::mutex mu_draw;
 
@@ -28,6 +29,9 @@ int main()
 
 	Bridge bridge;
 	bridge.DrawBridge();
+
+	Track track;
+	track.DrawTrackSelect();
 
 	std::thread th_station(&Map::DrawStation, &map, "E:\\MiniMetro\\getMap\\station.txt");
 	Sleep(1000);
