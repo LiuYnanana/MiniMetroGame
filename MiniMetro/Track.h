@@ -18,6 +18,6 @@ private:
 	MyLogger* myLoger = NULL;
 	int x = 100 + 2048 * 25 / 64 + 70;
 	int y = 344;
-	bool vis[20];
+	bool vis[40];
 };
 

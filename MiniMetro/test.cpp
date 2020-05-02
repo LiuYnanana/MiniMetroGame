@@ -11,6 +11,7 @@
 #include "SubwayHead.h"
 #include "MyLogger.h"
 #include "Track.h"
+#include "Station.h"
 
 std::mutex mu_draw;
 
@@ -22,6 +23,7 @@ int main()
 	//try {
 
 	Map map;
+	Map* ptr_map = &map;
 	map.DrawMap("E:\\MiniMetro\\getMap\\river.txt", "E:\\MiniMetro\\getMap\\station.txt");
 
 	SubwayHead subway_head;
@@ -33,13 +35,24 @@ int main()
 	Track track;
 	track.DrawTrackSelect();
 
+	Station station(ptr_map);
+	//station.DrawStationPassager();
+
 	std::thread th_station(&Map::DrawStation, &map, "E:\\MiniMetro\\getMap\\station.txt");
+
+	Sleep(1000);
+	std::thread th_t(&Station::DrawStationPassager, &station);
+	std::thread th_monitor_overtime(&Station::MonitorStationOvertime, &station);
+
 	Sleep(1000);
 	Clock clock;
 	std::thread th_clock(&Clock::DrawClockPointer, &clock);
+	
+	
 
 	th_clock.join();
 	th_station.join();
+	th_t.join();
 
 	/*}
 	catch (const char* str_err) {

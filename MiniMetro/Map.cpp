@@ -1,8 +1,14 @@
 #include "Map.h"
 
-Map::Map() {
+Map::Map(){
 	myLoger = MyLogger::GetInstance();
 }
+
+//Map::Map(Map& mp) {
+//	myLoger = MyLogger::GetInstance();
+//	sta_appear = mp.sta_appear;
+//	v_station_shape = mp.v_station_shape;
+//}
 Map::~Map() {}
 
 
@@ -87,7 +93,9 @@ void Map::RemoveAdjacentPoint() {
 void Map::DrawBackground() {
 	LOG4CPLUS_INFO(myLoger->rootLog, "start init graph and load image");
 	initgraph(x + add_left + add_right, y);	// 创建绘图窗口，大小为 640x480 像素
-	loadimage(NULL, background_path);
+	//loadimage(NULL, background_path);
+	setbkcolor(RGB(245, 243, 239));
+	cleardevice();
 	LOG4CPLUS_INFO(myLoger->rootLog, "init graph and load image successed!");
 }
 
@@ -100,6 +108,7 @@ void Map::DrawRiver(std::string river_path) {
 	}
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "river is successfully drawn");
 }
+
 
 void Map::SetStationShapeNum() {
 	num_pentagram = 2; //一个五角星
@@ -121,6 +130,121 @@ void Map::SetStationShapeNum() {
 	LOG4CPLUS_INFO(myLoger->rootLog, "the number of ractangle is " << num_ractangle);
 	LOG4CPLUS_INFO(myLoger->rootLog, "the number of circle is " << num_circle);
 	LOG4CPLUS_INFO(myLoger->rootLog, "the number of triangle is " << num_triangle);
+}
+
+void Map::DrawShape(int x, int y, int k) {
+
+	std::vector<int> v;
+	if (k == 0) {  //矩形
+		v.push_back(x - 6);
+		v.push_back(y - 6);
+		v.push_back(x + 6);
+		v.push_back(y + 6);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is ractangle");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate(left-top, right-bottom): ("
+			<< x - 6 << ", " << y - 6 << "), ("
+			<< x + 6 << ", " << y + 6 << ")");
+	}
+	else if (k == 1) {  //圆
+		v.push_back(x);
+		v.push_back(y);
+		v.push_back(7);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is circle");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate(circle-center, radius): ("
+			<< x << ", " << y << "), 6");
+	}
+	else if (k == 2) { //三角形
+		v.push_back(x);
+		v.push_back(y - 9);
+
+		v.push_back(x - 7);
+		v.push_back(y + 5);
+
+		v.push_back(x + 7);
+		v.push_back(y + 5);
+
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is triangle");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
+			<< x << ", " << y - 8 << "), ("
+			<< x - 6 << ", " << y + 4 << "), ("
+			<< x + 6 << ", " << y + 4 << ")");
+	}
+	else if (k == 3) { //五角星
+		v.push_back(x);
+		v.push_back(y - 9);
+
+		v.push_back(x - 7);
+		v.push_back(y + 5);
+
+		v.push_back(x + 7);
+		v.push_back(y + 5);
+
+		v.push_back(x - 7);
+		v.push_back(y - 5);
+
+		v.push_back(x);
+		v.push_back(y + 9);
+
+		v.push_back(x + 7);
+		v.push_back(y - 5);
+
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is pentagram");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
+			<< x << ", " << y - 8 << "), ("
+			<< x - 6 << ", " << y + 4 << "), ("
+			<< x + 6 << ", " << y + 4 << "), ("
+			<< x - 6 << ", " << y - 4 << "), ("
+			<< x << ", " << y + 8 << "), ("
+			<< x + 6 << ", " << y - 4 << ")");
+	}
+	else if (k == 4) { //120 53 十字形
+		v.push_back(x - 7);
+		v.push_back(y - 3);
+		v.push_back(x + 7);
+		v.push_back(y + 3);
+
+		v.push_back(x - 3);
+		v.push_back(y - 7);
+		v.push_back(x + 3);
+		v.push_back(y + 7);
+
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is crisscross");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
+			<< x - 6 << ", " << y - 2 << "), ("
+			<< x + 6 << ", " << y + 2 << "), ("
+			<< x - 2 << ", " << y - 6 << "), ("
+			<< x + 2 << ", " << y + 6 << ")");
+	}
+	else if (k == 5) { //五边形
+		v.push_back(x);
+		v.push_back(y - 9);
+
+		v.push_back(x - 7);
+		v.push_back(y - 3);
+
+		v.push_back(x - 5);
+		v.push_back(y + 7);
+
+		v.push_back(x + 5);
+		v.push_back(y + 7);
+
+		v.push_back(x + 7);
+		v.push_back(y - 3);
+
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is fivangle");
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
+			<< x << ", " << y - 8 << "), ("
+			<< x - 6 << ", " << y - 2 << "), ("
+			<< x - 4 << ", " << y + 6 << "), ("
+			<< x - 6 << ", " << y - 4 << "), ("
+			<< x + 4 << ", " << y + 6 << "), ("
+			<< x + 6 << ", " << y - 2 << ")");
+	}
+	mu_draw.lock();
+	setlinecolor(BLACK);
+	setfillcolor(WHITE);
+	Graphics::DrawGraphics(k * 2 + 1, v);
+	mu_draw.unlock();
 }
 
 void Map::DrawStationShape(std::pair<int, int> pos) {
@@ -152,116 +276,10 @@ void Map::DrawStationShape(std::pair<int, int> pos) {
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "finally shape is " << k);
 	}
 
-	setlinecolor(BLACK);
-	setfillcolor(WHITE);
-	std::vector<int> v;
 	int x = pos.first, y = pos.second;
-	if (k == 0) {  //矩形
-		v.push_back(x - 6);
-		v.push_back(y - 6);
-		v.push_back(x + 6);
-		v.push_back(y + 6);
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is ractangle");
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate(left-top, right-bottom): (" 
-			<< x - 6 << ", "<< y - 6 << "), (" 
-			<< x + 6 << ", " << y + 6 << ")" );
-	}
-	else if (k == 1) {  //圆
-		v.push_back(x);
-		v.push_back(y);
-		v.push_back(6);
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is circle");
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate(circle-center, radius): ("
-			<< x << ", " << y << "), 6");
-	}
-	else if (k == 2) { //三角形
-		v.push_back(x);
-		v.push_back(y - 8);
 
-		v.push_back(x - 6);
-		v.push_back(y + 4);
+	DrawShape(x, y, k);
 
-		v.push_back(x + 6);
-		v.push_back(y + 4);
-
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is triangle");
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
-			<< x << ", " << y - 8 << "), ("
-			<< x - 6 << ", " << y + 4 << "), ("
-		    << x + 6 << ", " << y + 4 << ")");
-	}
-	else if (k == 3) { //五角星
-		v.push_back(x);
-		v.push_back(y - 8);
-
-		v.push_back(x - 6);
-		v.push_back(y + 4);
-
-		v.push_back(x + 6);
-		v.push_back(y + 4);
-
-		v.push_back(x - 6);
-		v.push_back(y - 4);
-
-		v.push_back(x);
-		v.push_back(y + 8);
-
-		v.push_back(x + 6);
-		v.push_back(y - 4);
-
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is pentagram");
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
-			<< x << ", " << y - 8 << "), ("
-			<< x - 6 << ", " << y + 4 << "), ("
-			<< x + 6 << ", " << y + 4 << "), ("
-			<< x - 6 << ", " << y - 4 << "), ("
-			<< x << ", " << y + 8 << "), ("
-			<< x + 6 << ", " << y - 4 << ")");
-	}
-	else if (k == 4) { //120 53 十字形
-		v.push_back(x - 6);
-		v.push_back(y - 2);
-		v.push_back(x + 6);
-		v.push_back(y + 2);
-		
-		v.push_back(x - 2);
-		v.push_back(y - 6);
-		v.push_back(x + 2);
-		v.push_back(y + 6);
-
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is crisscross");
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
-			<< x - 6 << ", " << y - 2 << "), ("
-			<< x + 6 << ", " << y + 2 << "), ("
-			<< x - 2<< ", " << y - 6 << "), ("
-			<< x + 2 << ", " << y + 6 << ")");
-	}
-	else if (k == 5) { //五边形
-		v.push_back(x);
-		v.push_back(y - 8);
-
-		v.push_back(x - 6);
-		v.push_back(y - 2);
-
-		v.push_back(x - 4);
-		v.push_back(y + 6);
-
-		v.push_back(x + 4);
-		v.push_back(y + 6);
-
-		v.push_back(x + 6);
-		v.push_back(y - 2);
-
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "this shape is fivangle");
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "coordinate: ("
-			<< x << ", " << y - 8 << "), ("
-			<< x - 6 << ", " << y - 2 << "), ("
-			<< x - 4 << ", " << y + 6 << "), ("
-			<< x - 6 << ", " << y - 4 << "), ("
-			<< x + 4 << ", " << y + 6 << "), ("
-			<< x + 6 << ", " << y - 2 << ")");
-	}
-	Graphics::DrawGraphics(k * 2 + 1, v);
 	num_shape[k]--;
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "the " << k << " shape left " << num_shape[k]);
 	v_station_shape.push_back(k);
@@ -285,19 +303,20 @@ void Map::DrawStation(std::string station_path) {
 	
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "the " << i << " station will be draw..");
 
-		mu_draw.lock();
 		DrawStationShape(sta_wait[i]);
-		mu_draw.unlock();
 
 		cnt_appear_sta++;
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "appeared station number is " << cnt_appear_sta);
+		mu_map.lock();
 		sta_appear.push_back(sta_wait[i]);
 		sta_wait.erase(sta_wait.begin() + i);
-		
+		mu_map.unlock();
 		
 		int k = TimeInterval();
-		LOG4CPLUS_INFO(myLoger->rootLog, "station appear time Interval is " << k << "ms");
-		Sleep(k * 10);
+		if (cnt_appear_sta == 1) k = 0;
+		LOG4CPLUS_INFO(myLoger->rootLog, "station appear time interval is " << k << "ms");
+		LOG4CPLUS_INFO(myLoger->rootLog, "appear staton number is " << sta_appear.size());
+		Sleep(k * 100);
 	}
 
 }

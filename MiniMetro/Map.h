@@ -12,7 +12,7 @@
 #include <mutex>
 #include <windows.h>
 #include "File.h"
-#include "graphics.h"
+#include "Graphics.h"
 #include "MyLogger.h"
 #include <iostream>
 
@@ -23,6 +23,7 @@ class Map
 {
 public:
 	Map();
+	//Map(Map&);
 	void GetStation(std::string);
 	void GetRiver(std::string);
 
@@ -32,6 +33,7 @@ public:
 	int TimeInterval();
 	void RemoveAdjacentPoint();
 
+	void DrawShape(int, int, int);
 	void DrawStationShape(std::pair<int, int>);
 
 	void DrawBackground();
@@ -41,9 +43,6 @@ public:
 
 	~Map();
 private:
-	int a1 = 25, b1 = 64, a2 = 13, b2 = 32;
-	int add_left = 100, add_right = 100, add_down = 20;
-	int x = 2048 * a1 / b1, y = 1536 * a2 / b2 + add_down; //x = 800 y = 624 + 20 = 644
 	int center_x = x / 2 + add_left, center_y = y / 2;
 	int num_ractangle, num_circle, num_triangle, num_fivangle, num_pentagram, num_crisscross, num_shape[10];
 	static const int cx = 548;
@@ -51,11 +50,17 @@ private:
 	int cnt_appear_sta = 0;
 	LPCTSTR background_path = _T("background.png");
 	point_list river, station;
-	point_list sta_appear, sta_new_position, sta_wait, sta_old_position;
+	point_list  sta_new_position, sta_wait, sta_old_position;
 	point_list riv_move, riv_old_position, riv_new_position;
 	std::map<int, bool> vis_station, vis_river, vis_station_shape;
-	std::vector<int> v_station_shape;
+public:
+	int a1 = 25, b1 = 64, a2 = 13, b2 = 32;
+	int add_left = 100, add_right = 100, add_down = 20;
+	int x = 2048 * a1 / b1, y = 1536 * a2 / b2 + add_down; //x = 800 y = 624 + 20 = 644'
 	MyLogger* myLoger = NULL;
+	point_list sta_appear;
+	std::vector<int> v_station_shape;
+	std::mutex mu_map;
 };
 
 

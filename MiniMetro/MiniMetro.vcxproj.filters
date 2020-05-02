@@ -48,6 +48,9 @@
     <ClCompile Include="Color.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Station.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h">
@@ -75,6 +78,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Color.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Station.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

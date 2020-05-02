@@ -148,6 +148,7 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MyLogger.cpp" />
+    <ClCompile Include="Station.cpp" />
     <ClCompile Include="SubwayHead.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="Track.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MyLogger.h" />
+    <ClInclude Include="Station.h" />
     <ClInclude Include="SubwayHead.h" />
     <ClInclude Include="Track.h" />
   </ItemGroup>
