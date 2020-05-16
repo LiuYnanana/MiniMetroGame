@@ -20,6 +20,7 @@ public:
 
 	void DrawPassagerWarning(int);
 	void CanclePassagerWarning(int);
+	void GetStationPassagerInfo();
 	void DrawStationPassager();
 	
 	void MonitorStationOvertime();

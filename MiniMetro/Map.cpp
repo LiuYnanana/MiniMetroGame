@@ -1,7 +1,12 @@
 #include "Map.h"
 
-Map::Map(){
+Map::Map() {
 	myLoger = MyLogger::GetInstance();
+}
+Map::Map(std::string _river, std::string _station){
+	myLoger = MyLogger::GetInstance();
+	river_path = _river;
+	station_path = _station;
 }
 
 //Map::Map(Map& mp) {
@@ -12,7 +17,7 @@ Map::Map(){
 Map::~Map() {}
 
 
-void Map::GetStation(std::string station_path) {
+void Map::GetStation() {
 	File station_file;
 	std::vector<std::string> p; 
 	station_file.ReadTxt(station_path, p);
@@ -27,11 +32,11 @@ void Map::GetStation(std::string station_path) {
 	LOG4CPLUS_INFO(myLoger->rootLog, "station number is " << station.size());
 } 
 
-void Map::GetRiver(std::string river_path) {
+void Map::GetRiver() {
 	File river_file;
 	std::vector<std::string> p;
 	river_file.ReadTxt(river_path, p);
-
+	mu_map_diver.lock();
 	for (auto i : p) {
 		int x, y;
 		sscanf_s(i.c_str(), "(%d, %d)", &x, &y);
@@ -39,6 +44,7 @@ void Map::GetRiver(std::string river_path) {
 		int b = y * a1 / b1 + add_left;
 		river.push_back(std::make_pair(b, a));
 	}
+	mu_map_diver.unlock();
 	LOG4CPLUS_INFO(myLoger->rootLog, "map river'points number is " << river.size());
 }
 
@@ -92,20 +98,24 @@ void Map::RemoveAdjacentPoint() {
 
 void Map::DrawBackground() {
 	LOG4CPLUS_INFO(myLoger->rootLog, "start init graph and load image");
-	initgraph(x + add_left + add_right, y);	// 创建绘图窗口，大小为 640x480 像素
+	initgraph(1000, 644);	// 创建绘图窗口，大小为 640x480 像素
 	//loadimage(NULL, background_path);
+	
 	setbkcolor(RGB(245, 243, 239));
 	cleardevice();
+
 	LOG4CPLUS_INFO(myLoger->rootLog, "init graph and load image successed!");
 }
 
-void Map::DrawRiver(std::string river_path) { 
-	GetRiver(river_path);
+void Map::DrawRiver() { 
+	//GetRiver(river_path);
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "start draw river");
+	mu_map_diver.lock();
 	for (auto i : river) {
 		setfillcolor(RGB(174, 220, 252));
 		solidcircle(i.first, i.second, 1);
 	}
+	mu_map_diver.unlock();
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "river is successfully drawn");
 }
 
@@ -240,11 +250,8 @@ void Map::DrawShape(int x, int y, int k) {
 			<< x + 4 << ", " << y + 6 << "), ("
 			<< x + 6 << ", " << y - 2 << ")");
 	}
-	mu_draw.lock();
-	setlinecolor(BLACK);
-	setfillcolor(WHITE);
-	Graphics::DrawGraphics(k * 2 + 1, v);
-	mu_draw.unlock();
+
+	appear_sta_info.push_back(std::make_pair(k * 2 + 1, v));
 }
 
 void Map::DrawStationShape(std::pair<int, int> pos) {
@@ -286,8 +293,8 @@ void Map::DrawStationShape(std::pair<int, int> pos) {
 
 }
 
-void Map::DrawStation(std::string station_path) {
-	GetStation(station_path);
+void Map::GetStationInfo() {
+	//GetStation();
 	RemoveAdjacentPoint();
 	SetStationShapeNum();
 	for (auto i : station) {
@@ -321,10 +328,18 @@ void Map::DrawStation(std::string station_path) {
 
 }
 
+void Map::DrawStation() {
+	for (auto i : appear_sta_info) {
+		setlinecolor(BLACK);
+		setfillcolor(WHITE);
+		
+		Graphics::DrawGraphics(i.first, i.second);
+	}
+}
 
-void Map::DrawMap(std::string river_path, std::string station_path) {
+void Map::DrawMap() {
 	DrawBackground();
-	DrawRiver(river_path);
+	DrawRiver();
 }
 
 

@@ -10,11 +10,16 @@ class Track
 public:
 	Track();
 	void GetAllTrackColor();
+	void GetAllTrackInfo();
 	void DrawTrackSelect();
 	~Track();
-private:
+
+	int used_track;
+	int owned_track;
 	std::vector<int> track_color;
-	const int track_num = 7;
+	std::vector<std::pair<std::pair<int, int>, int> > track_info; // center_x, center_y, r
+private:
+	const int track_num = 7; 
 	MyLogger* myLoger = NULL;
 	int x = 100 + 2048 * 25 / 64 + 70;
 	int y = 344;

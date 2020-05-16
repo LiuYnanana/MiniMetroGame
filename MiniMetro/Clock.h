@@ -20,7 +20,8 @@ public:
 	void DrawDate(bool);
 	void DrawClockBackground();
 	void DrawClockScale();
-	void DrawClockPointer();
+	void DrawClockPointer(int);
+	void CancleClockPointer(int);
 	~Clock();
 private:
 	int x = 100 + 2048 * 25 / 64 + 70;

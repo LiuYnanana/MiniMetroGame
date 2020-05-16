@@ -91,47 +91,50 @@ void Clock::DrawClockScale() {
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "draw  clock'scale end");
 }
 
-void Clock::DrawClockPointer() {
+void Clock::DrawClockPointer(int i) {
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "Clock starting...");
-	while (true) {
+	//while (true) {
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "it's " << days << "day");
-		mu_draw.lock();
+		//mu_draw.lock();
 		DrawClockBackground();
 		DrawClockScale();
-		mu_draw.unlock();
+		//mu_draw.unlock();
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day clock'pointer start");
-		for (int i = 1; i <= 60; i++) {
-			int x2 = static_cast<int>(x - (sin(i * (PI / 30))) * (r - 20));
-			int y2 = static_cast<int>(y + (cos(i * (PI / 30))) * (r - 20));
+		i = i % 60 + 1;
+	
+		int x2 = static_cast<int>(x - (sin(i * (PI / 30))) * (r - 20));
+		int y2 = static_cast<int>(y + (cos(i * (PI / 30))) * (r - 20));
 
-			mu_draw.lock();
-			if (days & 1) {
-				setcolor(WHITE);
-				line(x, y, x2, y2);
-			}
-			else {
-				setcolor(BLACK);
-				line(x, y, x2, y2);
-			}
-			mu_draw.unlock();
-
-			Sleep(10000 / 60);
-
-			mu_draw.lock();
-			if (days & 1) {
-				setcolor(BLACK);
-				line(x, y, x2, y2);
-			}
-			else {
-				setcolor(WHITE);
-				line(x, y, x2, y2);
-			}
-			mu_draw.unlock();
+		
+		if (days & 1) {
+			setcolor(WHITE);
+			line(x, y, x2, y2);
 		}
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day clock'pointer end");
-		days++;
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "Clock end...");
-	}
+		else {
+			setcolor(BLACK);
+			line(x, y, x2, y2);
+		}
+
+	//}
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day clock'pointer end");
+	if(i == 60)
+	days++;
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "Clock end...");
 }
 
+void Clock::CancleClockPointer(int i) {
+	i = i % 60 + 1;
+
+	int x2 = static_cast<int>(x - (sin(i * (PI / 30))) * (r - 20));
+	int y2 = static_cast<int>(y + (cos(i * (PI / 30))) * (r - 20));
+
+	if (days & 1) {
+		setcolor(BLACK);
+		line(x, y, x2, y2);
+	}
+	else {
+		setcolor(WHITE);
+		line(x, y, x2, y2);
+	}
+}
 Clock::~Clock() {}

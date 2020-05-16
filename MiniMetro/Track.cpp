@@ -2,6 +2,8 @@
 
 Track::Track() {
 	myLoger = MyLogger::GetInstance();
+	used_track = 0;
+	owned_track = 3;
 }
 
 void Track::GetAllTrackColor() {
@@ -28,19 +30,38 @@ void Track::GetAllTrackColor() {
 
 }
 
-void Track::DrawTrackSelect() {
+void Track::GetAllTrackInfo() {
 	GetAllTrackColor();
 	int ty = y;
-	for (int i = 0; i < 3; i++) {
-		setfillcolor(Color::get_color(track_color[i]));
-		solidcircle(x, ty, 6);
+	for (int i = 0; i < track_num; i++) {
+		track_info.push_back(std::make_pair(std::make_pair(x, ty), 6));
 		ty += 35;
 	}
 	for (int i = 0; i < track_num; i++) {
-		setfillcolor(RGB(220, 220, 220));
-		solidcircle(x, ty, 6);
+		track_info.push_back(std::make_pair(std::make_pair(x, ty), 6));
+	//	setfillcolor(RGB(220, 220, 220));
+	//	solidcircle(x, ty, 6);
 		ty += 35;
 	}
+	LOG4CPLUS_INFO(myLoger->rootLog, "push track info into vector end..");
 }
+
+void Track::DrawTrackSelect() {
+	for (int i = 0; i < track_num; i++) {
+		if (i < owned_track) {
+			setfillcolor(Color::get_color(track_color[i]));
+			LOG4CPLUS_INFO(myLoger->rootLog, i << " < " <<owned_track);
+		}
+		else {
+			setfillcolor(RGB(220, 220, 220));
+		}
+		int cx = track_info[i].first.first;
+		int cy = track_info[i].first.second;
+		int r = track_info[i].second;
+		solidcircle(cx, cy, r);
+	}
+
+}
+
 
 Track::~Track(){}
