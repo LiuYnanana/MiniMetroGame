@@ -123,9 +123,12 @@ std::vector<int> Station::GetShapePoint(int x, int y, int k, int grade) {
 	return v;
 }
 
-std::pair<int, int> Station::GetPassagerOffset(int k) {
+std::pair<int, int> Station::GetPassagerOffset(int k, int cnt) {
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "get passager offset start... " << k);
-	int num = sta_passager_pos[k].size();
+	int num;
+	if (cnt == -1)
+		num = sta_passager_pos[k].size();
+	else num = cnt;
 	//if (num > 7) return std::make_pair(-1, -1);
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "sta_passager_pos[" << k << "].size is" << num);
 	switch (num)
@@ -216,7 +219,8 @@ void Station::GetStationPassagerInfo() {
 			LOG4CPLUS_DEBUG(myLoger->rootLog, "the shape_num is " << shape_num);
 		} while (ptr_map->v_station_shape[shape_num] == ptr_map->v_station_shape[sta_num]);
 		
-		std::pair<int, int> offset = GetPassagerOffset(sta_num);
+		mu_station.lock();
+		std::pair<int, int> offset = GetPassagerOffset(sta_num, -1);
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "offset.first is" << offset.first);
 		
 	
@@ -233,6 +237,7 @@ void Station::GetStationPassagerInfo() {
 		t_struct.v_point = v;
 		sta_passager_pos[sta_num].push_back(t_struct);
 
+		mu_station.unlock();
 		//if (sta_passager_pos[sta_num].size() == 8) { //車站到達最大承載量
 		//	sta_overtime.push_back(std::make_pair(sta_num, time(NULL)));
 		//	DrawPassagerWarning(sta_num);

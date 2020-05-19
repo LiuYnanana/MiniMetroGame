@@ -1,9 +1,11 @@
 #include "Route.h"
 
-Route::Route(Map* _mp, Track* _track) {
+Route::Route(Map* _mp, Track* _track, Station* _station) {
 	mp = _mp;
 	p_track = _track;
+	ptr_station = _station;
 	myLoger = MyLogger::GetInstance();
+	
 }
 
 std::pair<int, int> Route::JudgeOnStation(int x, int y) {
@@ -87,16 +89,40 @@ void Route::GetRouteInfo() {
 					<< "sx, sy " << sx << sy);
 			}
 
-			if (m.uMsg == WM_LBUTTONUP && sx != -1) {
+			if (m.uMsg == WM_LBUTTONUP && sx != -1 && sx != t.first) {
 				if (flag == 1) {
 					if (p_track->used_track < p_track->owned_track) {
 						LOG4CPLUS_DEBUG(myLoger->rootLog, "flag ");
 
 						route_point t_route_point = GetRouteEndpoint(sx, sy, t.first, t.second);
 						t_route_point.route_id = p_track->used_track;
+
+						std::pair<int, int> t_pair = std::make_pair(sx, sy);
+						point_list::iterator it = find_if(mp->sta_appear.begin(),
+							mp->sta_appear.end(), [t_pair](const std::pair<int, int> a) {
+								return t_pair == a;
+							});
+						t_route_point.station_sid = it - mp->sta_appear.begin();
+
+						
+						it = find_if(mp->sta_appear.begin(),
+							mp->sta_appear.end(), [t](const std::pair<int, int> a) {
+								return t == a;
+							});
+						t_route_point.station_eid = it - mp->sta_appear.begin();
+
+						//
+						t_route_point.front_station_type[mp->v_station_shape[t_route_point.station_sid]]++;
+						t_route_point.back_station_type[mp->v_station_shape[t_route_point.station_eid]]++;
+
+						for (auto i : mp->sta_appear) {
+							LOG4CPLUS_DEBUG(myLoger->rootLog, "sta_appear info " << i.first << " " << i.second);
+						}
+
 						std::deque<route_point> t_q;
 						t_q.push_back(t_route_point);
 						route_info.push_back(t_q);
+
 						p_track->track_info[p_track->used_track].second += 3;
 						p_track->used_track++;
 						
@@ -106,7 +132,14 @@ void Route::GetRouteInfo() {
 						LOG4CPLUS_INFO(myLoger->rootLog, "1 push route_info: (" << t_route_point.fsx << " "
 							<< t_route_point.fsy << " " << t_route_point.fex << " " << t_route_point.fey << ") ("
 							<< t_route_point.sx << " " << t_route_point.sy << " " << t_route_point.ex << " "
-							<< t_route_point.ey << ") " << t_route_point.route_id);
+							<< t_route_point.ey << ") " << t_route_point.route_id <<" " << t_route_point.station_sid <<
+						" " << t_route_point.station_eid);
+						for (auto i : t_route_point.front_station_type) {
+							LOG4CPLUS_DEBUG(myLoger->rootLog, "map front " << i.first << " " << i.second);
+						}
+						for (auto i : t_route_point.back_station_type) {
+							LOG4CPLUS_DEBUG(myLoger->rootLog, "map back " << i.first << " " << i.second);
+						}
 					}
 					else {
 						// 线路不足 无法创建新的线路
@@ -114,9 +147,29 @@ void Route::GetRouteInfo() {
 				}
 				else if (flag == 2 || flag == 3) {    //连接一个endpoint  一个站点 
 					
-					if (flag == 2) { 
+					if (flag == 2) { //从线路的front处 连接一个新站点
 						route_point t_route_point = GetRouteEndpoint(t.first, t.second, sx, sy);
 						t_route_point.route_id = t_route_id;
+
+						point_list::iterator it = find_if(mp->sta_appear.begin(),
+							mp->sta_appear.end(), [t](const std::pair<int, int> a) {
+								return t == a;
+							});
+						t_route_point.station_sid = it - mp->sta_appear.begin();
+
+						std::pair<int, int> t_pair = std::make_pair(sx, sy);
+						it = find_if(mp->sta_appear.begin(),
+							mp->sta_appear.end(), [t_pair](const std::pair<int, int> a) {
+								return t_pair == a;
+							});
+						t_route_point.station_eid = it - mp->sta_appear.begin();
+
+						for (auto i : route_info[t_route_id]) {
+							i.front_station_type[mp->v_station_shape[t_route_point.station_sid]]++;
+							t_route_point.back_station_type[mp->v_station_shape[i.station_eid]]++;
+						}
+						t_route_point.front_station_type[mp->v_station_shape[t_route_point.station_sid]]++;
+						t_route_point.back_station_type[mp->v_station_shape[t_route_point.station_eid]]++;
 
 						t_route_point.fex = -1;
 						t_route_point.fey = -1;
@@ -126,7 +179,14 @@ void Route::GetRouteInfo() {
 						LOG4CPLUS_INFO(myLoger->rootLog, "2 push route_info: (" << t_route_point.fsx << " "
 							<< t_route_point.fsy << " " << t_route_point.fex << " " << t_route_point.fey << ") ("
 							<< t_route_point.sx << " " << t_route_point.sy << " " << t_route_point.ex << " "
-							<< t_route_point.ey << ") " << t_route_point.route_id);
+							<< t_route_point.ey << ") " << t_route_point.route_id << t_route_point.station_sid <<
+							" " << t_route_point.station_eid);
+						for (auto i : t_route_point.front_station_type) {
+							LOG4CPLUS_DEBUG(myLoger->rootLog, "map front " << i.first << " " << i.second);
+						}
+						for (auto i : t_route_point.back_station_type) {
+							LOG4CPLUS_DEBUG(myLoger->rootLog, "map back " << i.first << " " << i.second);
+						}
 					}
 					else {
 						route_point t_route_point = GetRouteEndpoint(sx, sy, t.first, t.second);
@@ -134,13 +194,40 @@ void Route::GetRouteInfo() {
 						t_route_point.fsx = -1;
 						t_route_point.fsy = -1;
 
+						std::pair<int, int> t_pair = std::make_pair(sx, sy);
+						point_list::iterator it = find_if(mp->sta_appear.begin(),
+							mp->sta_appear.end(), [t_pair](const std::pair<int, int> a) {
+								return t_pair == a;
+							});
+						t_route_point.station_sid = it - mp->sta_appear.begin();
+
+						it = find_if(mp->sta_appear.begin(),
+							mp->sta_appear.end(), [t](const std::pair<int, int> a) {
+								return t == a;
+							});
+						t_route_point.station_eid = it - mp->sta_appear.begin();
+
+						for (auto i : route_info[t_route_id]) {
+							i.back_station_type[mp->v_station_shape[t_route_point.station_eid]]++;
+							t_route_point.front_station_type[mp->v_station_shape[i.station_sid]]++;
+						}
+						t_route_point.front_station_type[mp->v_station_shape[t_route_point.station_sid]]++;
+						t_route_point.back_station_type[mp->v_station_shape[t_route_point.station_eid]]++;
+
 						route_info[t_route_id].back().fex = -1;
 						route_info[t_route_id].back().fey = -1;
 						route_info[t_route_id].push_back(t_route_point);
 						LOG4CPLUS_INFO(myLoger->rootLog, "3 push route_info: (" << t_route_point.fsx << " "
 							<< t_route_point.fsy << " " << t_route_point.fex << " " << t_route_point.fey << ") ("
 							<< t_route_point.sx << " " << t_route_point.sy << " " << t_route_point.ex << " "
-							<< t_route_point.ey << ") " << t_route_point.route_id);
+							<< t_route_point.ey << ") " << t_route_point.route_id << " " << t_route_point.station_sid <<
+							" " << t_route_point.station_eid);
+						for (auto i : t_route_point.front_station_type) {
+							LOG4CPLUS_DEBUG(myLoger->rootLog, "map front " << i.first << " " << i.second);
+						}
+						for (auto i : t_route_point.back_station_type) {
+							LOG4CPLUS_DEBUG(myLoger->rootLog, "map back " << i.first << " " << i.second);
+						}
 					}
 				}
 				flag = -1;

@@ -14,7 +14,7 @@ public:
 	~Station();
 	
 	int RandPassagerTime();
-	std::pair<int, int> GetPassagerOffset(int);
+	std::pair<int, int> GetPassagerOffset(int, int);
 	std::vector<int> GetShapePoint(int, int, int, int);
 
 
@@ -26,15 +26,19 @@ public:
 	void MonitorStationOvertime();
 
 	void DrawEndPicture();
-private:
-	Map* ptr_map;
 	struct passager_shape {
 		int shape;
 		std::vector<int> v_point;
 	};
-	std::vector<std::vector<passager_shape> > sta_passager_pos;
+
+	std::vector<std::vector<passager_shape> > sta_passager_pos; //哪一个站点  八位乘客的位置
+	std::mutex mu_station;
+private:
+	Map* ptr_map;
+	
 	std::vector <std::pair<int, int> > sta_overtime;
 
 	int arrive_people;
+
 };
 

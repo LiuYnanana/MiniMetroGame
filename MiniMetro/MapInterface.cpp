@@ -32,6 +32,8 @@ void MapInterface::ShowMapInterface() {
 		ptr_station->DrawStationPassager();
 
 		ptr_route->DrawRoute();
+		ptr_sub_head->DrawSubwayHeadMove();
+		ptr_map->DrawStation();
 
 		LOG4CPLUS_INFO(myLoger->rootLog, "All draw waiting");
 		FlushBatchDraw();

@@ -49,9 +49,6 @@ int main()
 	Clock clock;
 	Clock* p_clock = &clock;
 
-	SubwayHead subway_head;
-	SubwayHead* p_sub_head = &subway_head;
-
 	Bridge bridge;
 	Bridge* p_bridge = &bridge;
 
@@ -61,8 +58,11 @@ int main()
 	Station station(p_map);
 	Station* p_station = &station;
 
-	Route route(p_map, p_track);
+	Route route(p_map, p_track, p_station);
 	Route* p_route = &route;
+
+	SubwayHead subway_head(p_route, p_station, p_track, p_map);
+	SubwayHead* p_sub_head = &subway_head;
 
 	MapData mapData(p_map, p_clock, p_sub_head, p_bridge, p_track, p_station, p_route);
 	mapData.InitMap();

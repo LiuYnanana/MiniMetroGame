@@ -22,8 +22,9 @@ void MapData::GetDrawMapData() {
 	std::thread th1(&Map::GetStationInfo, ptr_map);
 	std::thread th2(&Station::GetStationPassagerInfo, ptr_station);
 	std::thread th3(&Route::GetRouteInfo, ptr_route);
-
+	std::thread th4(&SubwayHead::GetSubwayHeadInfo, ptr_sub_head);
 	th1.join();
 	th2.join();
 	th3.join();
+	th4.join();
 }
