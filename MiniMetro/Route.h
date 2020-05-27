@@ -39,7 +39,7 @@ public:
 	route_point GetRouteEndpoint(int, int, int, int);
 	std::vector<std::deque<route_point> > route_info;
 
-	int Next_station[10][50][2]; // route_id staton_id 0 1(Õý
+	int Next_station[10][100][2]; // route_id staton_id 0 1(Õý
 	std::map<int, int> station_arrive[100][10][2]; // station_id route_id 0 1(
 private:
 	Map* mp;

@@ -238,10 +238,10 @@ void Station::GetStationPassagerInfo() {
 		sta_passager_pos[sta_num].push_back(t_struct);
 
 		mu_station.unlock();
-		//if (sta_passager_pos[sta_num].size() == 8) { //車站到達最大承載量
-		//	sta_overtime.push_back(std::make_pair(sta_num, time(NULL)));
+		if (sta_passager_pos[sta_num].size() == 8) { //車站到達最大承載量
+			sta_overtime.push_back(std::make_pair(sta_num, time(NULL)));
 		//	DrawPassagerWarning(sta_num);
-		//}
+		}
 		int t = RandPassagerTime();
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "passager appear time " << t);
 		Sleep(t * 1000);
@@ -264,8 +264,9 @@ void Station::DrawStationPassager() {
 				Graphics::DrawGraphics(j.shape * 2 + 1, j.v_point);
 			}
 		}
-
+		
 	}
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "!Here");
 }
 
 void Station::DrawEndPicture() { 

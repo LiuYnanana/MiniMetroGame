@@ -12,6 +12,13 @@ Route::Route(Map* _mp, Track* _track, Station* _station) {
 			}
 		}
 	}
+
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 100; j++) {
+			Next_station[i][j][0] = -1;
+			Next_station[i][j][1] = -1;
+		}
+	}
 }
 
 std::pair<int, int> Route::JudgeOnStation(int x, int y) {
@@ -155,9 +162,10 @@ void Route::ConnectRouteToStation(int sx, int sy, int ex, int ey, int route_id) 
 	
 }
 
-void Route::StationDFS(int start, int station_id, int route,  bool is_first, bool front) {
+void Route::StationDFS(int start, int station_id, int route, bool is_first, bool front) {
 	if (is_first) {
 		int u = Next_station[route][station_id][front];
+		if (u == -1) return;
 		int sta_shape = mp->v_station_shape[u];
 		if (dfs_vis[u]) return;
 		LOG4CPLUS_INFO(myLoger->rootLog, "next station id shape" << u << " "
@@ -180,34 +188,41 @@ void Route::StationDFS(int start, int station_id, int route,  bool is_first, boo
 				}
 			}
 		}
-		
 	}
 }
 
 void Route::GetConnectionInfo() {
 	mu_push_sta_id.lock();
-
+	for (int i = 0; i < 100; i++) {
+		for (int j = 0; j < 10; j++) {
+			station_arrive[i][j][0].clear();
+			station_arrive[i][j][1].clear();
+		}
+	}
 	for (int k = 0; k < p_track->used_track; k++) {
 		for (int i = 0; i < connect_sta_id.size(); i++) {
 			LOG4CPLUS_INFO(myLoger->rootLog, "dfs i " << i);
 			memset(dfs_vis, false, sizeof(dfs_vis));
-			dfs_vis[connect_sta_id[i]] = true;
-			StationDFS(connect_sta_id[i], connect_sta_id[i], k, true, true);
+			int u = connect_sta_id[i];
+			dfs_vis[u] = true;	
+			station_arrive[u][k][1][mp->v_station_shape[u]]++;
+			StationDFS(u, u, k, true, true);
 			memset(dfs_vis, false, sizeof(dfs_vis));
-			dfs_vis[connect_sta_id[i]] = true;
-			StationDFS(connect_sta_id[i], connect_sta_id[i], k, true, false);
+			dfs_vis[u] = true;
+			station_arrive[u][k][0][mp->v_station_shape[u]]++;
+			StationDFS(u, u, k, true, false);
 		}
 	}
 	
 	for (int i = 0; i < connect_sta_id.size(); i++) {
 		for (int j = 0; j < p_track->used_track; j++) {
 			for (auto m : station_arrive[connect_sta_id[i]][j][1]) {
-				LOG4CPLUS_INFO(myLoger->rootLog, "1 dfs station_id " << connect_sta_id[i] << " "
-					<< m.first << " " << m.second);
+				LOG4CPLUS_INFO(myLoger->rootLog, "1 dfs station_id " << connect_sta_id[i] << " j "
+					<< j << " shape " << m.first << " num " << m.second);
 			}
 			for (auto m : station_arrive[connect_sta_id[i]][j][0]) {
-				LOG4CPLUS_INFO(myLoger->rootLog, "0 dfs station_id " << connect_sta_id[i] << " "
-					<< m.first << " " << m.second);
+				LOG4CPLUS_INFO(myLoger->rootLog, "0 dfs station_id " << connect_sta_id[i] << " j " 
+					<< j << " shape " << m.first << " num " << m.second);
 			}
 		}
 	}

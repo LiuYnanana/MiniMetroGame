@@ -406,12 +406,14 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i) {
 					it != passager_shape[i].end(); ) {
 					LOG4CPLUS_DEBUG(myLoger->rootLog, "t_subHead.station_id]" << t_subHead.station_id);
 
+					
 					int next_sta = ptr_route->Next_station[t_subHead.route_id][t_subHead.station_id][1];
+					LOG4CPLUS_DEBUG(myLoger->rootLog, "next_sta" << next_sta);
 					if (ptr_map->v_station_shape[t_subHead.station_id] == *it) {
 						it = passager_shape[i].erase(it);
 					}
-					else if (!ptr_route->station_arrive[next_sta][t_subHead.route_id][1][*it]
-						&& ptr_station->sta_passager_pos[t_subHead.station_id].size() < 8) {
+					else if (next_sta == -1 || (next_sta != -1 && !ptr_route->station_arrive[next_sta][t_subHead.route_id][1][*it]
+						&& ptr_station->sta_passager_pos[t_subHead.station_id].size() < 8)) {
 						std::pair<int, int> offset = ptr_station->GetPassagerOffset(t_subHead.station_id, -1);
 						std::vector<int> v = GetShapePoint(ptr_map->sta_appear[t_subHead.station_id].first + offset.first,
 							ptr_map->sta_appear[t_subHead.station_id].second + offset.second,
@@ -479,12 +481,12 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i) {
 					LOG4CPLUS_DEBUG(myLoger->rootLog, "t_subHead.station_id]" << t_subHead.station_id);
 
 					int next_sta = ptr_route->Next_station[t_subHead.route_id][t_subHead.station_id][0];
-
+					LOG4CPLUS_DEBUG(myLoger->rootLog, "next_sta" << next_sta);
 					if (ptr_map->v_station_shape[t_subHead.station_id] == *it) {
 						it = passager_shape[i].erase(it);
 					}
-					else if (!ptr_route->station_arrive[next_sta][t_subHead.route_id][0][*it]
-						&& ptr_station->sta_passager_pos[t_subHead.station_id].size() < 8) {
+					else if (next_sta == -1 || (next_sta != -1 && !ptr_route->station_arrive[next_sta][t_subHead.route_id][0][*it]
+						&& ptr_station->sta_passager_pos[t_subHead.station_id].size() < 8)) {
 						std::pair<int, int> offset = ptr_station->GetPassagerOffset(t_subHead.station_id, -1);
 						std::vector<int> v = GetShapePoint(ptr_map->sta_appear[t_subHead.station_id].first + offset.first,
 							ptr_map->sta_appear[t_subHead.station_id].second + offset.second,

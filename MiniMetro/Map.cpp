@@ -341,7 +341,7 @@ void Map::GetStationInfo() {
 		if (cnt_appear_sta == 1) k = 0;
 		LOG4CPLUS_INFO(myLoger->rootLog, "station appear time interval is " << k << "ms");
 		LOG4CPLUS_INFO(myLoger->rootLog, "appear staton number is " << sta_appear.size());
-		Sleep(k * 1000);
+		Sleep(k * 100);
 	}
 
 }
