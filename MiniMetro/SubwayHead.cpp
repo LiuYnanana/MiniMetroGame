@@ -231,7 +231,7 @@ void SubwayHead::PushStationToBack(int k) {
 	int len = sqrt((sx - ex) * (sx - ex) + (sy - ey) * (sy - ey));
 
 	for (int j = 20; j <= len - 20; j += 10) {
-		if (j == 20 || j + 10 >= len - 20) {
+		if (j == 20 || j + 10 > len - 20) {
 			t_pos.wait_pos = true;
 			t_pos.sta_left = false;
 			t_pos.sta_right = false;
@@ -257,8 +257,10 @@ void SubwayHead::PushStationToBack(int k) {
 			" " << t_pos.ex << " " << t_pos.ey << "; " << t_pos.x << " " << t_pos.y);
 
 		pos_info[k].push_back(t_pos);
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "t_pos info" << t_pos.sx << " " << t_pos.sy <<
+		LOG4CPLUS_ERROR(myLoger->rootLog, "t_pos info" << t_pos.sx << " " << t_pos.sy <<
 			" " << t_pos.ex << " " << t_pos.ey << "; " << t_pos.x << " " << t_pos.y);
+		LOG4CPLUS_ERROR(myLoger->rootLog, "station_id" << t_pos.station_id << " " << t_pos.sta_left <<
+			" " << t_pos.sta_right);
 	}
 }
 
@@ -278,17 +280,17 @@ void SubwayHead::PushStationToFront(int k) {
 	int len = sqrt((sx - ex) * (sx - ex) + (sy - ey) * (sy - ey));
 
 	for (int j = len - 20; j >= 20; j -= 10) {
-		if (j == 20 || j - 10 <= 20) {
+		if (j == len - 20 || j - 10 < 20) {
 			t_pos.wait_pos = true;
 			t_pos.sta_left = false;
 			t_pos.sta_right = false;
-			if (j == 20) {
-				t_pos.sta_right = true;
-				t_pos.station_id = ptr_route->route_info[k].front().station_sid;
-			}
-			if (j - 10 < 20) {
+			if (j == len - 20) {
 				t_pos.sta_left = true;
 				t_pos.station_id = ptr_route->route_info[k].front().station_eid;
+			}
+			if (j - 10 < 20) {
+				t_pos.sta_right = true;
+				t_pos.station_id = ptr_route->route_info[k].front().station_sid;
 			}
 
 		}
@@ -300,8 +302,10 @@ void SubwayHead::PushStationToFront(int k) {
 
 
 		pos_info[k].push_front(t_pos);
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "t_pos info" << t_pos.sx << " " << t_pos.sy <<
+		LOG4CPLUS_ERROR(myLoger->rootLog, "t_pos info" << t_pos.sx << " " << t_pos.sy <<
 			" " << t_pos.ex << " " << t_pos.ey << "; " << t_pos.x << " " << t_pos.y);
+		LOG4CPLUS_ERROR(myLoger->rootLog, "station_id" << t_pos.station_id << " " << t_pos.sta_left <<
+			" " << t_pos.sta_right);
 	}
 
 }
@@ -363,21 +367,28 @@ void SubwayHead::GetSubHeadPos(subHead& t_subHead, int i) {
 
 void SubwayHead::DealPassagers(subHead& t_subHead, int i) {
 	//-----------------乘客上下车----------
+	LOG4CPLUS_ERROR(myLoger->rootLog, "这里车站号 " << t_subHead.station_id);
 	if (t_subHead.wait_pos) {       //载客
 		if (t_subHead.director) {    // 从前往后行驶
+			LOG4CPLUS_ERROR(myLoger->rootLog, "车从先向后行驶");
 			if (t_subHead.sta_right) { //上车
+				LOG4CPLUS_ERROR(myLoger->rootLog, "上车");
 				if (passager_shape[i].size() < sub_hold_passager) {
-					LOG4CPLUS_DEBUG(myLoger->rootLog, "t_subHead.station_id " << t_subHead.station_id);
-					for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
-						LOG4CPLUS_DEBUG(myLoger->rootLog, "!possager info " << i.shape);
-					}
+					LOG4CPLUS_ERROR(myLoger->rootLog, "车站号 " << t_subHead.station_id);
+			/*		for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
+						LOG4CPLUS_ERROR(myLoger->rootLog, "该站乘客形状" << i.shape);
+					}*/
 
 					std::vector<Station::passager_shape>::iterator it;
 					for (it = ptr_station->sta_passager_pos[t_subHead.station_id].begin();
 						it != ptr_station->sta_passager_pos[t_subHead.station_id].end(); ) {
 
+						LOG4CPLUS_ERROR(myLoger->rootLog, " 正向 map 车站 路线 形状 这条路能否到达" << t_subHead.station_id << " " << t_subHead.route_id
+						<< " " << it->shape << " " <<ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][it->shape]);
+
 						if (ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][it->shape]) {
 							passager_shape[i].push_back(it->shape);
+							LOG4CPLUS_ERROR(myLoger->rootLog,  it->shape << "形状上车了");
 							it = ptr_station->sta_passager_pos[t_subHead.station_id].erase(it);
 						}
 						else it++;
@@ -434,23 +445,25 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i) {
 
 		}
 		else {
+			LOG4CPLUS_ERROR(myLoger->rootLog, "车从后往前行驶");
 			if (t_subHead.sta_left) { //上车
-				LOG4CPLUS_DEBUG(myLoger->rootLog, "back upupup" );
+				LOG4CPLUS_ERROR(myLoger->rootLog, "上车");
 				if (passager_shape[i].size() < sub_hold_passager) {
 
 					for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
 						LOG4CPLUS_DEBUG(myLoger->rootLog, "!possager info " << i.shape);
 					}
-
+					LOG4CPLUS_ERROR(myLoger->rootLog, "车站号 " << t_subHead.station_id);
 					std::vector<Station::passager_shape>::iterator it;
 					for (it = ptr_station->sta_passager_pos[t_subHead.station_id].begin();
 						it != ptr_station->sta_passager_pos[t_subHead.station_id].end(); ) {
 
-						LOG4CPLUS_DEBUG(myLoger->rootLog, "station shape" << it->shape);
-						LOG4CPLUS_DEBUG(myLoger->rootLog, "station shape" << 
-							ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][0][it->shape]);
+						LOG4CPLUS_ERROR(myLoger->rootLog, " 反向 map 车站 路线 形状 这条路能否到达" << t_subHead.station_id << " " << t_subHead.route_id
+							<< " " << it->shape << " " << ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][it->shape]);
+
 						if (ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][0][it->shape]) {
 							passager_shape[i].push_back(it->shape);
+							LOG4CPLUS_ERROR(myLoger->rootLog, it->shape << "形状上车了");
 							it = ptr_station->sta_passager_pos[t_subHead.station_id].erase(it);
 						}
 						else it++;
@@ -524,11 +537,13 @@ void SubwayHead::GetSubwayHeadInfo() {
 			
 			if (ptr_route->route_info[k].back().ex != pos_info[k].back().ex ||
 				ptr_route->route_info[k].back().ey != pos_info[k].back().ey) {  // 向后push站点
+				LOG4CPLUS_ERROR(myLoger->rootLog, "向后添加站点");
 				PushStationToBack(k);
 			}
 
 			if (ptr_route->route_info[k].front().sx != pos_info[k].front().sx ||
 				ptr_route->route_info[k].front().sy != pos_info[k].front().sy) { //front 增加路线
+				LOG4CPLUS_ERROR(myLoger->rootLog, "向前添加站点");
 				PushStationToFront(k);
 			}
 
@@ -550,7 +565,7 @@ void SubwayHead::GetSubwayHeadInfo() {
 			subHead_info[i].pos_y << " " << subHead_info[i].wait_pos);
 		}
 		mu_sub_head.unlock();
-		Sleep(100);
+		Sleep(800);
 
 	}
 

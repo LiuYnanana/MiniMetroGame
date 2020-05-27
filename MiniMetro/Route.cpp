@@ -136,7 +136,7 @@ void Route::ConnectStationToRoute(int sx, int sy, int ex, int ey, int route_id) 
 	route_info[route_id].push_front(t_route_point);
 
 
-	LOG4CPLUS_INFO(myLoger->rootLog, "2 push route_info: (" << t_route_point.fsx << " "
+	LOG4CPLUS_ERROR(myLoger->rootLog, "2 push route_info: (" << t_route_point.fsx << " "
 		<< t_route_point.fsy << " " << t_route_point.fex << " " << t_route_point.fey << ") ("
 		<< t_route_point.sx << " " << t_route_point.sy << " " << t_route_point.ex << " "
 		<< t_route_point.ey << ") " << t_route_point.route_id << t_route_point.station_sid <<
@@ -154,7 +154,7 @@ void Route::ConnectRouteToStation(int sx, int sy, int ex, int ey, int route_id) 
 	route_info[route_id].back().fey = -1;
 	route_info[route_id].push_back(t_route_point);
 
-	LOG4CPLUS_INFO(myLoger->rootLog, "3 push route_info: (" << t_route_point.fsx << " "
+	LOG4CPLUS_ERROR(myLoger->rootLog, "3 push route_info: (" << t_route_point.fsx << " "
 		<< t_route_point.fsy << " " << t_route_point.fex << " " << t_route_point.fey << ") ("
 		<< t_route_point.sx << " " << t_route_point.sy << " " << t_route_point.ex << " "
 		<< t_route_point.ey << ") " << t_route_point.route_id << " " << t_route_point.station_sid <<
@@ -162,7 +162,7 @@ void Route::ConnectRouteToStation(int sx, int sy, int ex, int ey, int route_id) 
 	
 }
 
-void Route::StationDFS(int start, int station_id, int route, bool is_first, bool front) {
+void Route::StationDFS(int start, int station_id, int route_id, int route, bool is_first, bool front) {
 	if (is_first) {
 		int u = Next_station[route][station_id][front];
 		if (u == -1) return;
@@ -171,8 +171,8 @@ void Route::StationDFS(int start, int station_id, int route, bool is_first, bool
 		LOG4CPLUS_INFO(myLoger->rootLog, "next station id shape" << u << " "
 			<< sta_shape);
 		dfs_vis[u] = true;
-		station_arrive[start][route][front][sta_shape]++;
-		StationDFS(start, u, route, false, front);
+		station_arrive[start][route_id][front][sta_shape]++;
+		StationDFS(start, u, route_id, route, false, front);
 		dfs_vis[u] = false;
 	}
 	else {
@@ -182,8 +182,8 @@ void Route::StationDFS(int start, int station_id, int route, bool is_first, bool
 				if (Edge_route[k][station_id][u] && !dfs_vis[u]) {
 					dfs_vis[u] = true;
 					int sta_shape = mp->v_station_shape[u];
-					station_arrive[start][route][front][sta_shape]++;
-					StationDFS(start, u, k, false, front);
+					station_arrive[start][route_id][front][sta_shape]++;
+					StationDFS(start, u, route_id, k, false, front);
 					dfs_vis[u] = false;
 				}
 			}
@@ -206,22 +206,23 @@ void Route::GetConnectionInfo() {
 			int u = connect_sta_id[i];
 			dfs_vis[u] = true;	
 			station_arrive[u][k][1][mp->v_station_shape[u]]++;
-			StationDFS(u, u, k, true, true);
+			StationDFS(u, u, k, k, true, true);
+
 			memset(dfs_vis, false, sizeof(dfs_vis));
 			dfs_vis[u] = true;
 			station_arrive[u][k][0][mp->v_station_shape[u]]++;
-			StationDFS(u, u, k, true, false);
+			StationDFS(u, u, k, k, true, false);
 		}
 	}
 	
 	for (int i = 0; i < connect_sta_id.size(); i++) {
 		for (int j = 0; j < p_track->used_track; j++) {
 			for (auto m : station_arrive[connect_sta_id[i]][j][1]) {
-				LOG4CPLUS_INFO(myLoger->rootLog, "1 dfs station_id " << connect_sta_id[i] << " j "
+				LOG4CPLUS_ERROR(myLoger->rootLog, "1 dfs station_id " << connect_sta_id[i] << " j "
 					<< j << " shape " << m.first << " num " << m.second);
 			}
 			for (auto m : station_arrive[connect_sta_id[i]][j][0]) {
-				LOG4CPLUS_INFO(myLoger->rootLog, "0 dfs station_id " << connect_sta_id[i] << " j " 
+				LOG4CPLUS_ERROR(myLoger->rootLog, "0 dfs station_id " << connect_sta_id[i] << " j "
 					<< j << " shape " << m.first << " num " << m.second);
 			}
 		}

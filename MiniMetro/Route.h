@@ -32,7 +32,7 @@ public:
 	void ConnectStationToRoute(int, int, int, int, int);
 	void ConnectRouteToStation(int, int, int, int, int);
 	
-	void StationDFS(int, int, int, bool, bool);
+	void StationDFS(int, int, int, int, bool, bool);
 	void GetConnectionInfo();
 	void GetRouteInfo();
 	void DrawRoute();
