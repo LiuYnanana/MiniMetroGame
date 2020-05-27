@@ -7,10 +7,11 @@
 #include "Station.h"
 #include "Route.h"
 #include <thread>
+#include "Supply.h"
 class MapData
 {
 public:
-	MapData(Map*, Clock*, SubwayHead*, Bridge*, Track*, Station*, Route*);
+	MapData(Map*, Clock*, SubwayHead*, Bridge*, Track*, Station*, Route*, Supply*);
 	void InitMap();
 	void GetDrawMapData();
 private:
@@ -21,5 +22,6 @@ private:
 	Track* ptr_track;
 	Station* ptr_station;
 	Route* ptr_route;
+	Supply* ptr_supply;
 };
 

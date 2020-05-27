@@ -18,16 +18,18 @@ class Clock
 public:
 	Clock();
 	void DrawDate(bool);
-	void DrawClockBackground();
+	void DrawClockBackground(int);
 	void DrawClockScale();
 	void DrawClockPointer(int);
 	void CancleClockPointer(int);
 	~Clock();
+	int days = 0;
+	bool week;
 private:
 	int x = 100 + 2048 * 25 / 64 + 70;
 	int y = 70;
 	int r = 28;
-	int days = 0;
+
 	std::mutex mu;
 	MyLogger* myLoger = NULL;
 

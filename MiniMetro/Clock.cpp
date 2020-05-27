@@ -2,6 +2,7 @@
 
 Clock::Clock() {
 	myLoger = MyLogger::GetInstance();
+	week = false;
 }
 
 void Clock::DrawDate(bool IsDay) {
@@ -37,7 +38,7 @@ void Clock::DrawDate(bool IsDay) {
 	outtextxy(x - 28 - 37, 70 - 25, s);
 }
 
-void Clock::DrawClockBackground() {
+void Clock::DrawClockBackground(int i) {
 	if (days & 1) { //黑夜
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw night background start");
 		setcolor(BLACK);    
@@ -56,8 +57,11 @@ void Clock::DrawClockBackground() {
 		solidcircle(x, y, 2);
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day background end");
 	}
-	if(days % 2 == 0) //新的一天开始
+	if (days % 2 == 0) {//新的一天开始
 		DrawDate(false);
+		if((days / 2) % 7 == 0 && i == 1 && (days / 2)) 
+		week = true;
+	}
 	DrawDate(true);
 	
 }
@@ -93,14 +97,12 @@ void Clock::DrawClockScale() {
 
 void Clock::DrawClockPointer(int i) {
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "Clock starting...");
-	//while (true) {
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "it's " << days << "day");
-		//mu_draw.lock();
-		DrawClockBackground();
-		DrawClockScale();
-		//mu_draw.unlock();
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day clock'pointer start");
 		i = i % 60 + 1;
+		DrawClockBackground(i);
+		DrawClockScale();
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "draw day clock'pointer start");
+		
 	
 		int x2 = static_cast<int>(x - (sin(i * (PI / 30))) * (r - 20));
 		int y2 = static_cast<int>(y + (cos(i * (PI / 30))) * (r - 20));

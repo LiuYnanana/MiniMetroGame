@@ -154,6 +154,7 @@
     <ClCompile Include="MapInterface.cpp" />
     <ClCompile Include="Station.cpp" />
     <ClCompile Include="SubwayHead.cpp" />
+    <ClCompile Include="Supply.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="zhy.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="MapInterface.h" />
     <ClInclude Include="Station.h" />
     <ClInclude Include="SubwayHead.h" />
+    <ClInclude Include="Supply.h" />
     <ClInclude Include="Track.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

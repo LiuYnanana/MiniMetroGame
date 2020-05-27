@@ -32,6 +32,22 @@ void Map::GetStation() {
 	LOG4CPLUS_INFO(myLoger->rootLog, "station number is " << station.size());
 } 
 
+void Map::RemoveAdjacentRiver() {
+	point_list t;
+	t.push_back(river[0]);
+	for (int i = 1; i < river.size(); i++) {
+		int len = t.size() - 1;
+		if (abs(river[i].first - t[len].first) <= 6 && abs(river[i].second - t[len].second) <= 6)
+			continue;
+		t.push_back(river[i]);
+	}
+	river.clear();
+	for (auto i : t) {
+		river.push_back(i);
+	}
+
+}
+
 void Map::GetRiver() {
 	File river_file;
 	std::vector<std::string> p;
@@ -45,6 +61,8 @@ void Map::GetRiver() {
 		river.push_back(std::make_pair(b, a));
 	}
 	mu_map_diver.unlock();
+
+	RemoveAdjacentRiver();
 	LOG4CPLUS_INFO(myLoger->rootLog, "map river'points number is " << river.size());
 }
 
@@ -57,7 +75,7 @@ bool Map::cmp_distance_center(std::pair<int, int> a, std::pair<int, int> b) {
 
 bool Map::cmp_river_x(std::pair<int, int> a, std::pair<int, int> b) {
 	return a.first > b.first;
-}
+} 
 
 int Map::TimeInterval() {
 	int len = station.size();
@@ -113,7 +131,7 @@ void Map::DrawRiver() {
 	mu_map_diver.lock();
 	for (auto i : river) {
 		setfillcolor(RGB(174, 220, 252));
-		solidcircle(i.first, i.second, 1);
+		solidcircle(i.first, i.second, 3);
 	}
 	mu_map_diver.unlock();
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "river is successfully drawn");
@@ -121,11 +139,11 @@ void Map::DrawRiver() {
 
 
 void Map::SetStationShapeNum() {
-	num_pentagram = 2; //一个五角星
-	num_fivangle = 1; //两个五边形
-	num_crisscross = 2; //两个十字形
-	num_ractangle = 2; //两个正方形
-	num_circle = station.size() * 2 / 5;
+	num_pentagram = station.size() * 1 / 15; //一个五角星
+	num_fivangle = station.size() * 1 / 15; //两个五边形
+	num_crisscross = station.size() * 1 / 15; //两个十字形
+	num_ractangle = station.size() * 2 / 15; //两个正方形
+	num_circle = station.size() * 5 / 15;
 	num_triangle = station.size() - (num_pentagram + num_fivangle + num_crisscross + num_ractangle + num_circle);
 	num_shape[3] = num_pentagram;
 	num_shape[5] = num_fivangle;
@@ -323,7 +341,7 @@ void Map::GetStationInfo() {
 		if (cnt_appear_sta == 1) k = 0;
 		LOG4CPLUS_INFO(myLoger->rootLog, "station appear time interval is " << k << "ms");
 		LOG4CPLUS_INFO(myLoger->rootLog, "appear staton number is " << sta_appear.size());
-		Sleep(k * 100);
+		Sleep(k * 1000);
 	}
 
 }

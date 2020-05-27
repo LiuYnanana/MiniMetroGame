@@ -15,22 +15,9 @@
 #include "Route.h"
 #include "MapInterface.h"
 #include "MapData.h"
+#include "Supply.h"
 
 std::mutex mu_draw;  
-
-void f() {
-	initgraph(1000, 644);	// 创建绘图窗口，大小为 640x480 像素
-	setbkcolor(RGB(245, 243, 239));
-	cleardevice();
-
-	setlinecolor(RED);
-	line(100, 100, 500, 200);
-
-	_getch();				// 按任意键继续
-	closegraph();			// 关闭绘图窗口
-
-	//line(345, 200, 231, 100);
-}
 
 int main()
 {
@@ -64,12 +51,15 @@ int main()
 	SubwayHead subway_head(p_route, p_station, p_track, p_map);
 	SubwayHead* p_sub_head = &subway_head;
 
-	MapData mapData(p_map, p_clock, p_sub_head, p_bridge, p_track, p_station, p_route);
+	Supply supply(p_sub_head, p_bridge, p_track, p_clock);
+	Supply* p_supply = &supply;
+
+	MapData mapData(p_map, p_clock, p_sub_head, p_bridge, p_track, p_station, p_route, p_supply);
 	mapData.InitMap();
 	std::thread th_getData(&MapData::GetDrawMapData, &mapData);
 	
 
-	MapInterface mpInface(p_map, p_clock, p_sub_head, p_bridge, p_track, p_station, p_route);
+	MapInterface mpInface(p_map, p_clock, p_sub_head, p_bridge, p_track, p_station, p_route, p_supply);
 	std::thread th_draw(&MapInterface::ShowMapInterface, &mpInface);
 
 

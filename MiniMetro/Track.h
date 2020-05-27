@@ -12,6 +12,7 @@ public:
 	void GetAllTrackColor();
 	void GetAllTrackInfo();
 	void DrawTrackSelect();
+	void DrawOneTrack(int, int);
 	~Track();
 
 	int used_track;
@@ -23,6 +24,7 @@ private:
 	MyLogger* myLoger = NULL;
 	int x = 100 + 2048 * 25 / 64 + 70;
 	int y = 344;
+	int r = 34;
 	bool vis[40];
 };
 

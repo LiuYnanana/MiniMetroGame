@@ -14,7 +14,7 @@ COLORREF Color::get_color(int k) {
 	case 8:
 		return RGB(60, 179, 113);
 	case 10:
-		return RGB(255, 255, 0);
+		return RGB(139, 126, 102);
 	case 12:
 		return RGB(255, 127, 80);
 	case 14:
@@ -24,9 +24,9 @@ COLORREF Color::get_color(int k) {
 	case 18:
 		return RGB(47, 79, 79);
 	case 20:
-		return RGB(127, 255, 170);
+		return RGB(139, 76, 57);
 	case 22:
-		return RGB(175, 238, 238);
+		return RGB(100, 149, 237);
 		break;
 	default:
 		break;

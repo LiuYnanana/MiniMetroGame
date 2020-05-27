@@ -9,7 +9,7 @@ Station::~Station(){}
 
 int Station::RandPassagerTime() { 
 	srand(time(NULL));
-	int k = sqrt(rand() % 60);
+	int k = sqrt(rand() % 100);
 	return k;
 }
 

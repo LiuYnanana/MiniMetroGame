@@ -2,32 +2,51 @@
 
 Bridge::Bridge() {
 	myLoger = MyLogger::GetInstance();
+	owned_bridge = 3;
+	used_bridge = 0;
+}
+
+void Bridge::GetBridgeInfo() {
+	bridge_info.clear();
+	int x = 40, y = 480;
+	for (int i = 0; i < owned_bridge - used_bridge; i++) {
+		bridge_info.push_back(std::make_pair(x, y));
+		x += 15;
+	}
+}
+
+void Bridge::DrawOneBridge(int x, int y) {
+	setcolor(BLACK);
+	setfillcolor(WHITE);
+	fillcircle(x, y, r);     //  40 480
+	line(x - 22, y - 14, x + 22, y - 14);
+	line(x - 22, y - 14, x - 22, y + 13);
+	line(x + 22, y - 14, x + 22, y + 13);
+	line(x - 22, y - 16, x + 22, y - 16);
+	fillpie(x - 14, y - 9, x + 14, y + 31, 0, 66);
+	setlinecolor(WHITE);
+	line(x - 14, y + 12, x + 14, y + 12);
+	line(x - 14, y + 11, x + 14, y + 11);
+	setcolor(BLACK);
+	fillcircle(x - 18, y + 3, 2);
+	fillcircle(x - 14, y - 6, 3);
+	fillcircle(x + 18, y + 3, 2);
+	fillcircle(x + 14, y - 6, 3);
+	setlinecolor(BLACK);
+	line(x - 22, y - 14, x - 22, y - 19);
+	line(x + 22, y - 14, x + 22, y - 19);
+	line(x - 11, y - 14, x - 11, y - 19);// 40 480
+	line(x + 11, y - 14, x + 11, y - 19);
+	line(x, y - 14, x, y - 19);
 }
 
 void Bridge::DrawBridge() {
+	GetBridgeInfo();
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "start draw bridge");
-	setcolor(BLACK);
-	setfillcolor(WHITE);
-	fillcircle(x, y, r); 
-	line(18, 466, 62, 466);
-	line(18, 466, 18, 493);
-	line(62, 466, 62, 493);
-	line(18, 464, 62, 464);
-	fillpie(26, 471, 54, 511, 0, 66);
-	setlinecolor(WHITE);
-	line(26, 492, 54, 492);
-	line(26, 491, 54, 491);
-	setcolor(BLACK);
-	fillcircle(22, 483, 2);
-	fillcircle(26, 474, 3);
-	fillcircle(58, 483, 2);
-	fillcircle(54, 474, 3);
-	setlinecolor(BLACK);
-	line(18, 466, 18, 461);
-	line(62, 466, 62, 461);
-	line(29, 466, 29, 461);
-	line(51, 466, 51, 461);
-	line(40, 466, 40, 461);
+	for (auto i : bridge_info) {
+		int x = i.first, y = i.second;
+		DrawOneBridge(x, y);
+	}
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "bridge is successfully drawn");
 }
 

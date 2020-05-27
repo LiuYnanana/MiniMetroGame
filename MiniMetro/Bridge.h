@@ -4,16 +4,22 @@
 #include <graphics.h>
 #include <conio.h>
 #include <easyx.h>
+#include <vector>
 #include "MyLogger.h"
 
 class Bridge	
 {
 public:
 	Bridge();
+	void GetBridgeInfo();
+	void DrawOneBridge(int, int);
 	void DrawBridge();
 	~Bridge();
+
+	int owned_bridge, used_bridge;
+	std::vector<std::pair<int, int> >bridge_info;
 private:
-	int x = 40, y = 480, r = 34;
+	int  r = 34;
 	MyLogger* myLoger = NULL;
 };
 

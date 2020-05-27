@@ -6,6 +6,24 @@ Track::Track() {
 	owned_track = 3;
 }
 
+void Track::DrawOneTrack(int x, int y)
+{
+	setcolor(BLACK);
+	setfillcolor(WHITE);
+	fillcircle(x, y, r);   
+	line(x - 32, y, x + 22, y - 23);
+	line(x - 22, y + 23, x + 32, y);
+
+	line(x - 6, y - 11, x + 3, y + 11);
+	line(x - 3, y - 12, x + 6, y + 10);
+
+	line(x - 23, y - 4, x - 14, y + 19);
+	line(x - 20, y - 5, x - 11, y + 18);
+
+	line(x + 13, y - 18, x + 22, y + 4);
+	line(x + 16, y - 19, x + 26, y + 3);
+}
+
 void Track::GetAllTrackColor() {
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "start srand track color...");
 	srand(time(NULL));
@@ -62,6 +80,5 @@ void Track::DrawTrackSelect() {
 	}
 
 }
-
 
 Track::~Track(){}

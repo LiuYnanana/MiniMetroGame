@@ -1,7 +1,7 @@
 #include "MapData.h"
 
 MapData::MapData(Map* _map, Clock* _clock, SubwayHead* _subwayHead, Bridge* _bridge,
-	Track* _track, Station* _station, Route* _route) {
+	Track* _track, Station* _station, Route* _route, Supply* _supply) {
 	ptr_map = _map;
 	ptr_clock = _clock;
 	ptr_sub_head = _subwayHead;
@@ -9,12 +9,12 @@ MapData::MapData(Map* _map, Clock* _clock, SubwayHead* _subwayHead, Bridge* _bri
 	ptr_track = _track;
 	ptr_station = _station;
 	ptr_route = _route;
+	ptr_supply = _supply;
 }
 
 void MapData::InitMap() {
 	ptr_map->GetRiver();
 	ptr_map->GetStation();
-
 	ptr_track->GetAllTrackInfo();
 }
 

@@ -6,10 +6,11 @@
 #include "Route.h"
 #include "Station.h"
 #include "MyLogger.h"
+#include "Supply.h"
 class MapInterface
 {
 public:
-	MapInterface(Map*, Clock*, SubwayHead*, Bridge*, Track*, Station*, Route*);
+	MapInterface(Map*, Clock*, SubwayHead*, Bridge*, Track*, Station*, Route*, Supply*);
 	void ShowMapInterface();
 private:
 	Map* ptr_map;
@@ -19,6 +20,7 @@ private:
 	Track* ptr_track;
 	Station* ptr_station;
 	Route* ptr_route;
+	Supply* ptr_supply;
 	MyLogger* myLoger = NULL;
 };
 
