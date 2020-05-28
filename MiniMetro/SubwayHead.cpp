@@ -565,7 +565,7 @@ void SubwayHead::GetSubwayHeadInfo() {
 			subHead_info[i].pos_y << " " << subHead_info[i].wait_pos);
 		}
 		mu_sub_head.unlock();
-		Sleep(800);
+		Sleep(400);
 
 	}
 

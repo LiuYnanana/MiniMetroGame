@@ -4,6 +4,7 @@ Bridge::Bridge() {
 	myLoger = MyLogger::GetInstance();
 	owned_bridge = 3;
 	used_bridge = 0;
+	have_bridge = true;
 }
 
 void Bridge::GetBridgeInfo() {
@@ -13,6 +14,19 @@ void Bridge::GetBridgeInfo() {
 		bridge_info.push_back(std::make_pair(x, y));
 		x += 15;
 	}
+}
+
+void Bridge::DrawNoBridge() {
+	if (!have_bridge) {
+		settextcolor(BLACK);
+		setbkmode(TRANSPARENT);
+		settextstyle(30, 0, _T("黑体"));
+
+		TCHAR s[] = _T("无可用桥梁");
+		outtextxy(20, 480, s);
+	}
+
+	
 }
 
 void Bridge::DrawOneBridge(int x, int y) {
@@ -43,6 +57,8 @@ void Bridge::DrawOneBridge(int x, int y) {
 void Bridge::DrawBridge() {
 	GetBridgeInfo();
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "start draw bridge");
+	if (bridge_info.size() == 0) have_bridge = false;
+	DrawNoBridge();
 	for (auto i : bridge_info) {
 		int x = i.first, y = i.second;
 		DrawOneBridge(x, y);

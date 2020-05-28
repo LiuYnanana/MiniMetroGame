@@ -1,9 +1,10 @@
 #include "Route.h"
 
-Route::Route(Map* _mp, Track* _track, Station* _station) {
+Route::Route(Map* _mp, Track* _track, Station* _station, Bridge* _bridge) {
 	mp = _mp;
 	p_track = _track;
 	ptr_station = _station;
+	ptr_bridge = _bridge;
 	myLoger = MyLogger::GetInstance();
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 100; j++) {
@@ -78,6 +79,44 @@ int Route::GetStationId(int x, int y) {
 	return it - mp->sta_appear.begin();
 }
 
+bool Route::JudgeCircle(int sx, int sy, int ex, int ey, int x, int y, double r) { //点p1和p2都不在圆内
+	double a, b, c, dist1, dist2, angle1, angle2; // ax + by + c = 0;
+	if (sx == ex)
+		a = 1, b = 0, c = -sx;//特殊情况判断，分母不能为零
+	else if (sy == ey)
+		a = 0, b = 1, c = -sy;//特殊情况判断，分母不能为零
+	else {
+		a = sy - ey;
+		b = ex - sx;
+		c = sx * ey - sy * ex;
+	}
+	dist1 = a * x + b * y + c;
+	dist1 *= dist1;
+	dist2 = (a * a + b * b) * r * r;
+	if (dist1 > dist2) return false; //点到直线距离大于半径r
+	angle1 = (x - sx) * (ex - sx) + (y - sy) * (ey - sy);
+	angle2 = (x - ex) * (sx - ex) + (y - ey) * (sy - ey);
+	if (angle1 > 0 && angle2 > 0) return true; //余弦都为正，则是锐角
+	return false;
+}
+
+bool Route::JudgeOnRiver(int sx, int sy, int ex, int ey)
+{
+//	mp->mu_map_diver.lock();
+	for (auto i : mp->river) {
+		int x = i.first, y = i.second;
+		if (JudgeCircle(sx, sy, ex, ey, x, y, 6.0)) {
+			LOG4CPLUS_ERROR(myLoger->rootLog, "河流点位置 " << x <<
+				" " << y);
+			LOG4CPLUS_ERROR(myLoger->rootLog, "直线位置 " << sx <<
+				" " << sy << " " << ex << " " << ey);
+			return true;
+		}
+	}
+	//mp->mu_map_diver.unlock();
+		return false;
+}
+
 void Route::GetRouteStationInfo(int sx, int sy, int ex, int ey, route_point& t_route_point, int route_id) {
 	t_route_point.route_id = route_id;
 	t_route_point.station_sid = GetStationId(sx, sy);
@@ -100,16 +139,25 @@ void Route::GetRouteStationInfo(int sx, int sy, int ex, int ey, route_point& t_r
 
 void Route::ConnectStationToStation(int sx, int sy, int ex, int ey) {
 	if (p_track->used_track < p_track->owned_track) {  // 线路充足
-		
+		if (JudgeOnRiver(sx, sy, ex, ey)) { //需要经过桥梁
+			LOG4CPLUS_ERROR(myLoger->rootLog, "桥梁数量 " << ptr_bridge->owned_bridge <<
+				" " << ptr_bridge->used_bridge);
+			if (ptr_bridge->owned_bridge - ptr_bridge->used_bridge <= 0) {  //桥梁不足
+				sx = -1;
+				sy = -1;
+				ptr_bridge->have_bridge = false;
+				return ;
+			} 
+			ptr_bridge->used_bridge++;
+		}
 		route_point t_route_point = GetRouteEndpoint(sx, sy, ex, ey);
 		GetRouteStationInfo(sx, sy, ex, ey, t_route_point, p_track->used_track);
-		
+
 		std::deque<route_point> t_q;
 		t_q.push_back(t_route_point);
 		route_info.push_back(t_q);
 
 		UpdateTrackInfo();
-		
 		sx = -1;
 		sy = -1;
 		LOG4CPLUS_INFO(myLoger->rootLog, "1 push route_info: (" << t_route_point.fsx << " "
@@ -125,7 +173,15 @@ void Route::ConnectStationToStation(int sx, int sy, int ex, int ey) {
 }
 
 void Route::ConnectStationToRoute(int sx, int sy, int ex, int ey, int route_id) {
-	
+	if (JudgeOnRiver(sx, sy, ex, ey)) { //需要经过桥梁
+		if (ptr_bridge->owned_bridge - ptr_bridge->used_bridge <= 0) {  //桥梁不足
+			sx = -1;
+			sy = -1;
+			ptr_bridge->have_bridge = false;
+			return;
+		}
+		ptr_bridge->used_bridge++;
+	}
 	route_point t_route_point = GetRouteEndpoint(sx, sy, ex, ey);
 	GetRouteStationInfo(sx, sy, ex, ey, t_route_point, route_id);
 
@@ -145,6 +201,16 @@ void Route::ConnectStationToRoute(int sx, int sy, int ex, int ey, int route_id) 
 
 
 void Route::ConnectRouteToStation(int sx, int sy, int ex, int ey, int route_id) {
+	if (JudgeOnRiver(sx, sy, ex, ey)) { //需要经过桥梁
+		if (ptr_bridge->owned_bridge - ptr_bridge->used_bridge <= 0) {  //桥梁不足
+			sx = -1;
+			sy = -1;
+			ptr_bridge->have_bridge = false;
+			return;
+		}
+		ptr_bridge->used_bridge++;
+	}
+
 	route_point t_route_point = GetRouteEndpoint(sx, sy, ex, ey);
 	GetRouteStationInfo(sx, sy, ex, ey, t_route_point, route_id);
 
@@ -161,6 +227,7 @@ void Route::ConnectRouteToStation(int sx, int sy, int ex, int ey, int route_id) 
 		" " << t_route_point.station_eid);
 	
 }
+
 
 void Route::StationDFS(int start, int station_id, int route_id, int route, bool is_first, bool front) {
 	if (is_first) {
@@ -238,58 +305,60 @@ void Route::GetRouteInfo() {
 	int t_route_id;
 	while (true) {
 	//	mu_route.lock();
-		m = GetMouseMsg();
-		
-		std::pair<int, int> t = JudgeOnStation(m.x, m.y); 
+		if (MouseHit() == true) {
+			m = GetMouseMsg();
 
-		if (t.first != -1) {       //鼠标命中站点
-			if (m.uMsg == WM_LBUTTONDOWN) {
-				sx = t.first;
-				sy = t.second;
-				flag = sta_to_sta;
-			}
+			std::pair<int, int> t = JudgeOnStation(m.x, m.y);
 
-			if (m.uMsg == WM_LBUTTONUP && sx != -1 && sx != t.first) {
-				if (flag == sta_to_sta) {
-					ConnectStationToStation(sx, sy, t.first, t.second);
-				}
-			    if (flag == sta_to_route) {
-					ConnectStationToRoute(t.first, t.second, sx, sy, t_route_id);
-				}
-				if (flag == route_to_sta) {
-					ConnectRouteToStation(sx, sy, t.first, t.second, t_route_id);
-				}
-				GetConnectionInfo();
-				flag = -1;
-				sx = -1;
-				sy = -1;
-				}
-			}
-		
-		for (auto q_route : route_info) {
-			route_point t_f = q_route.front();
-			route_point t_b = q_route.back();
-
-			if (t_f.fsx != -1 && JudgeOnEndpoint(m.x, m.y, t_f.fsx, t_f.fsy)) {
+			if (t.first != -1) {       //鼠标命中站点
 				if (m.uMsg == WM_LBUTTONDOWN) {
-					sx = t_f.sx;
-					sy = t_f.sy;
-					flag = sta_to_route;
-					t_route_id = t_f.route_id;
+					sx = t.first;
+					sy = t.second;
+					flag = sta_to_sta;
+				}
+				
+				if (m.uMsg == WM_LBUTTONUP && sx != -1 && sx != t.first) {
+					if (flag == sta_to_sta) {
+						ConnectStationToStation(sx, sy, t.first, t.second);
+					}
+					if (flag == sta_to_route) {
+						ConnectStationToRoute(t.first, t.second, sx, sy, t_route_id);
+					}
+					if (flag == route_to_sta) {
+						ConnectRouteToStation(sx, sy, t.first, t.second, t_route_id);
+					}
+					GetConnectionInfo();
+					flag = -1;
+					sx = -1;
+					sy = -1;
 				}
 			}
 
-			if (t_b.fex != -1 && JudgeOnEndpoint(m.x, m.y, t_b.fex, t_b.fey)) {
-				if (m.uMsg == WM_LBUTTONDOWN) {
-					sx = t_b.ex;
-					sy = t_b.ey;
-					flag = route_to_sta;
-					t_route_id = t_b.route_id;
+			for (auto q_route : route_info) {
+				route_point t_f = q_route.front();
+				route_point t_b = q_route.back();
+
+				if (t_f.fsx != -1 && JudgeOnEndpoint(m.x, m.y, t_f.fsx, t_f.fsy)) {
+					if (m.uMsg == WM_LBUTTONDOWN) {
+						sx = t_f.sx;
+						sy = t_f.sy;
+						flag = sta_to_route;
+						t_route_id = t_f.route_id;
+					}
+				}
+
+				if (t_b.fex != -1 && JudgeOnEndpoint(m.x, m.y, t_b.fex, t_b.fey)) {
+					if (m.uMsg == WM_LBUTTONDOWN) {
+						sx = t_b.ex;
+						sy = t_b.ey;
+						flag = route_to_sta;
+						t_route_id = t_b.route_id;
+					}
 				}
 			}
+			//mu_route.unlock();
+			Sleep(50);
 		}
-		//mu_route.unlock();
-		Sleep(50);
 	}
 } 
 

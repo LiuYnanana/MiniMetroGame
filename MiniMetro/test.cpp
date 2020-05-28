@@ -45,7 +45,7 @@ int main()
 	Station station(p_map);
 	Station* p_station = &station;
 
-	Route route(p_map, p_track, p_station);
+	Route route(p_map, p_track, p_station, p_bridge);
 	Route* p_route = &route;
 
 	SubwayHead subway_head(p_route, p_station, p_track, p_map);

@@ -54,7 +54,6 @@ private:
 	static const int cy = 336;
 	int cnt_appear_sta = 0;
 	LPCTSTR background_path = _T("background.png");
-	point_list river;
 	point_list  sta_new_position, sta_wait, sta_old_position;
 	point_list riv_move, riv_old_position, riv_new_position;
 	std::map<int, bool> vis_station, vis_river, vis_station_shape;
@@ -65,6 +64,7 @@ public:
 	int x = 2048 * a1 / b1, y = 1536 * a2 / b2 + add_down; //x = 800 y = 624 + 20 = 644
 	MyLogger* myLoger = NULL;
 	point_list sta_appear, station;
+	point_list river;
 	std::vector<int> v_station_shape;
 	std::mutex mu_map, mu_map_diver;
 	std::vector < std::pair<int, std::vector<int> > > appear_sta_info;

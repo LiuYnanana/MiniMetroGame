@@ -10,6 +10,7 @@
 #include "Color.h"
 #include "MyLogger.h"
 #include "Station.h"
+#include "Bridge.h"
 class Route:public Track
 {
 public:
@@ -21,12 +22,14 @@ public:
 		//std::map<int, int> front_station_type; //end 点的 前边点的类型
 		//std::map<int, int> back_station_type; //start 点的 后边点的类型
 	};
-	Route(Map*, Track*, Station*);
+	Route(Map*, Track*, Station*, Bridge*);
 	std::pair<int, int> JudgeOnStation(int, int);
 	bool JudgeOnEndpoint(int, int, int, int);
 
 	void UpdateTrackInfo();
 	int GetStationId(int, int);
+	bool JudgeCircle(int, int, int, int, int, int, double);
+	bool JudgeOnRiver(int, int, int, int);
 	void GetRouteStationInfo(int, int, int, int, route_point&, int);
 	void ConnectStationToStation(int, int, int, int);
 	void ConnectStationToRoute(int, int, int, int, int);
@@ -45,6 +48,7 @@ private:
 	Map* mp;
 	Track* p_track;
 	Station* ptr_station;
+	Bridge* ptr_bridge;
 
 	std::mutex mu_route;
 	std::mutex mu_push_sta_id;
@@ -52,7 +56,6 @@ private:
 
 	int dfs_vis[100];
 	int Edge_route[10][100][100]; // route_id  station station
-	
 	
 	int sta_to_sta = 1;
 	int sta_to_route = 2;
