@@ -1,8 +1,9 @@
 #include "MyDeque.h"
 
 MyDeque::MyDeque() {
-	left_q = 99;
-	right_q = 100;
+	left_q = 2500;
+	right_q = 2501;
+
 }
 MyDeque::position& MyDeque::operator [] (int i) {
 	return deque[i];
@@ -33,8 +34,8 @@ MyDeque::position MyDeque::back() {
 }
 
 void MyDeque::clear() {
-	left_q = 99;
-	right_q = 100; 
+	left_q = 2500;
+	right_q = 2501; 
 }
 
 int MyDeque::front_pos() {

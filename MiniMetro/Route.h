@@ -11,6 +11,7 @@
 #include "MyLogger.h"
 #include "Station.h"
 #include "Bridge.h"
+
 class Route:public Track
 {
 public:
@@ -19,9 +20,8 @@ public:
 		int sx, sy, ex, ey;
 		int route_id;
 		int station_sid, station_eid;
-		//std::map<int, int> front_station_type; //end 点的 前边点的类型
-		//std::map<int, int> back_station_type; //start 点的 后边点的类型
 	};
+
 	Route(Map*, Track*, Station*, Bridge*);
 	std::pair<int, int> JudgeOnStation(int, int);
 	bool JudgeOnEndpoint(int, int, int, int);
@@ -49,7 +49,7 @@ private:
 	Track* p_track;
 	Station* ptr_station;
 	Bridge* ptr_bridge;
-
+	
 	std::mutex mu_route;
 	std::mutex mu_push_sta_id;
 	MyLogger* myLoger = NULL;

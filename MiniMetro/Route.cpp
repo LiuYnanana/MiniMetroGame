@@ -79,6 +79,7 @@ int Route::GetStationId(int x, int y) {
 	return it - mp->sta_appear.begin();
 }
 
+
 bool Route::JudgeCircle(int sx, int sy, int ex, int ey, int x, int y, double r) { //点p1和p2都不在圆内
 	double a, b, c, dist1, dist2, angle1, angle2; // ax + by + c = 0;
 	if (sx == ex)
@@ -106,9 +107,9 @@ bool Route::JudgeOnRiver(int sx, int sy, int ex, int ey)
 	for (auto i : mp->river) {
 		int x = i.first, y = i.second;
 		if (JudgeCircle(sx, sy, ex, ey, x, y, 6.0)) {
-			LOG4CPLUS_ERROR(myLoger->rootLog, "河流点位置 " << x <<
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "河流点位置 " << x <<
 				" " << y);
-			LOG4CPLUS_ERROR(myLoger->rootLog, "直线位置 " << sx <<
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "直线位置 " << sx <<
 				" " << sy << " " << ex << " " << ey);
 			return true;
 		}
@@ -316,6 +317,7 @@ void Route::GetRouteInfo() {
 					sy = t.second;
 					flag = sta_to_sta;
 				}
+
 				
 				if (m.uMsg == WM_LBUTTONUP && sx != -1 && sx != t.first) {
 					if (flag == sta_to_sta) {
@@ -357,7 +359,7 @@ void Route::GetRouteInfo() {
 				}
 			}
 			//mu_route.unlock();
-			Sleep(50);
+			Sleep(1);
 		}
 	}
 } 

@@ -27,7 +27,7 @@ public:
 	int end_pos();
 	void clear();
 	int left_q, right_q;
-	position deque[200];
+	position deque[5000];
 
 };
 
