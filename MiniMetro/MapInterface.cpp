@@ -22,11 +22,11 @@ void MapInterface::ShowMapInterface() {
 		ptr_clock->DrawClockPointer(clock_point++);
 
 		if (ptr_clock->week) {
-			ptr_supply->DrawGovernmentSupply();
+			std::thread t_supply(&Supply::DrawGovernmentSupply, ptr_supply);
+			//ptr_supply->DrawGovernmentSupply();
+			t_supply.join();
 			ptr_clock->week = false;
-		//	Sleep(100);
 			cleardevice();
-
 		}
 		ptr_map->DrawRiver();
 		ptr_sub_head->DrawSubwayHead();

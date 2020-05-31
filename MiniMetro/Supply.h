@@ -4,10 +4,11 @@
 #include "Track.h"
 #include "Clock.h"
 #include "MyLogger.h"
+#include "Map.h"
 class Supply
 {
 public:
-	Supply(SubwayHead*, Bridge*, Track*, Clock*);
+	Supply(SubwayHead*, Bridge*, Track*, Clock*, Map*);
 	int GetSelectSupply(int, int);
 	void DealSelectSupply();
 	void DrawGovernmentSupply();
@@ -20,6 +21,7 @@ private:
 	Bridge* ptr_bridge;
 	Track* ptr_track;
 	Clock* ptr_clock;
+	Map* ptr_map;
 	MyLogger* myLoger = NULL;
 };
 

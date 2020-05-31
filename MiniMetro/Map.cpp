@@ -25,14 +25,21 @@ void Map::GetStation() {
 	for(auto i : p) {
 		int x, y;
 		sscanf_s(i.c_str(), "(%d, %d)", &x, &y);
+		x = x / 2;
+		y = y * 3 / 5;
 		int a = x * a1 / b1 + add_left;
 		int b = y * a2 / b2;
 		station.push_back(std::make_pair(a, b));  
 	}
 	LOG4CPLUS_INFO(myLoger->rootLog, "station number is " << station.size());
 } 
+bool Map::cmp_river_x(std::pair<int, int> a, std::pair<int, int> b) {
+	if(a.first != b.first) return a.first < b.first;
+	return a.second < b.second;
+}
 
 void Map::RemoveAdjacentRiver() {
+	sort(river.begin(), river.end(), cmp_river_x);
 	point_list t;
 	t.push_back(river[0]);
 	for (int i = 1; i < river.size(); i++) {
@@ -44,6 +51,7 @@ void Map::RemoveAdjacentRiver() {
 	river.clear();
 	for (auto i : t) {
 		river.push_back(i);
+		LOG4CPLUS_ERROR(myLoger->rootLog, "river info " << i.first << " " << i.second);
 	}
 
 }
@@ -56,6 +64,8 @@ void Map::GetRiver() {
 	for (auto i : p) {
 		int x, y;
 		sscanf_s(i.c_str(), "(%d, %d)", &x, &y);
+		x = x * 3 / 5;
+		y = y / 2;
 		int a = x * a2 / b2;
 		int b = y * a1 / b1 + add_left;
 		river.push_back(std::make_pair(b, a));
@@ -72,10 +82,6 @@ bool Map::cmp_distance_center(std::pair<int, int> a, std::pair<int, int> b) {
 	int dist2 = (b.first - cx) * (b.first - cx) + (b.second - cy) * (b.second - cy);
 	return dist1 < dist2;
 }
-
-bool Map::cmp_river_x(std::pair<int, int> a, std::pair<int, int> b) {
-	return a.first > b.first;
-} 
 
 int Map::TimeInterval() {
 	int len = station.size();
@@ -96,7 +102,7 @@ void Map::RemoveAdjacentPoint() {
 	int len = station.size();
 	for (int i = 0; i < len; i++) {
 		for (int j = i + 1; j < len; j++) {
-			if (abs(station[j].first - station[i].first) < 40 && abs(station[j].second - station[i].second) < 40) {
+			if (abs(station[j].first - station[i].first) < 30 && abs(station[j].second - station[i].second) < 30) {
 				for (int k = j + 1; k < len; k++) {
 					station[k - 1] = station[k];
 				}
@@ -111,7 +117,7 @@ void Map::RemoveAdjacentPoint() {
 	for (auto i : t) {
 		station.push_back(i);
 	}
-	LOG4CPLUS_INFO(myLoger->rootLog, "after remove adjacent, station number is " << station.size());
+	LOG4CPLUS_ERROR(myLoger->rootLog, "after remove adjacent, station number is " << station.size());
 }
 
 void Map::DrawBackground() {
@@ -340,10 +346,10 @@ void Map::GetStationInfo() {
 		int k = TimeInterval();
 		if (cnt_appear_sta == 1) k = 0;
 		LOG4CPLUS_INFO(myLoger->rootLog, "station appear time interval is " << k << "ms");
-		LOG4CPLUS_INFO(myLoger->rootLog, "appear staton number is " << sta_appear.size());
+		
 		Sleep(k * 100);
 	}
-
+	LOG4CPLUS_ERROR(myLoger->rootLog, "appear staton number is " << sta_appear.size());
 }
 
 void Map::DrawStation() {

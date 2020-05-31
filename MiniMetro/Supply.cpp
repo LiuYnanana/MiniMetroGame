@@ -1,10 +1,11 @@
 #include "Supply.h"
 
-Supply::Supply(SubwayHead* _subwayHead, Bridge* _bridge, Track* _track, Clock* _clock) {
+Supply::Supply(SubwayHead* _subwayHead, Bridge* _bridge, Track* _track, Clock* _clock, Map* _map) {
 	ptr_sub_head = _subwayHead;
 	ptr_bridge = _bridge;
 	ptr_track = _track;
 	ptr_clock = _clock;
+	ptr_map = _map;
 	myLoger = MyLogger::GetInstance();
 }
 
@@ -20,6 +21,7 @@ int Supply::GetSelectSupply(int mx, int my) {
 
 void Supply::DealSelectSupply() {
 	while (true) {
+		//ptr_map->mu_mouse.lock();
 		if (MouseHit() == true) {
 			MOUSEMSG m = GetMouseMsg();
 			if (m.mkLButton == true) {
@@ -43,8 +45,10 @@ void Supply::DealSelectSupply() {
 				}
 			}
 		}
+		//ptr_map->mu_mouse.unlock();
 		
 	}
+	LOG4CPLUS_ERROR(myLoger->rootLog, "供应模块结束");
 }
 
 void Supply::DrawGovernmentSupply() {

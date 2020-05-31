@@ -66,8 +66,9 @@ public:
 	point_list sta_appear, station;
 	point_list river;
 	std::vector<int> v_station_shape;
-	std::mutex mu_map, mu_map_diver;
+	std::mutex mu_map, mu_map_diver, mu_mouse;
 	std::vector < std::pair<int, std::vector<int> > > appear_sta_info;
+
 };
 
 

@@ -2,7 +2,7 @@
 
 Station::Station(Map *mp){
 	ptr_map = mp;
-	sta_passager_pos.resize(50);
+	sta_passager_pos.resize(100);
 }
 
 Station::~Station(){}

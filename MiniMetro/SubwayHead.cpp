@@ -260,6 +260,7 @@ void SubwayHead::GetSelectInfo()
 {
 	bool flag = false;
 	while (true) {
+		//ptr_map->mu_mouse.lock();
 		flag = false;
 		if (MouseHit() == true) {
 			MOUSEMSG m = GetMouseMsg();
@@ -285,6 +286,7 @@ void SubwayHead::GetSelectInfo()
 				}
 			}
 		}	
+		//ptr_map->mu_mouse.unlock();
 	}
 }
 
@@ -354,7 +356,7 @@ void SubwayHead::PushStationToBack(int k) {
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "sx, sy, ex, ey " << sx << " " << sy << " " << ex << " " << ey);
 	int len = sqrt((sx - ex) * (sx - ex) + (sy - ey) * (sy - ey));
 
-	for (int j = 20; j <= len - 20; j += 2) {
+	for (int j = 10; j <= len - 10; j += 2) {
 		t_pos.sta_left = false;
 		t_pos.sta_right = false;
 		t_pos.sx = sx;
@@ -364,13 +366,13 @@ void SubwayHead::PushStationToBack(int k) {
 		t_pos.station_id = -1;
 		t_pos.wait_pos = false;
 
-		if (j == 20 || j + 2 > len - 20) {
+		if (j == 10 || j + 2 > len - 10) {
 			t_pos.wait_pos = true;
-			if (j == 20) {
+			if (j == 10) {
 				t_pos.sta_right = true;
 				t_pos.station_id = ptr_route->route_info[k].back().station_sid;
 			}
-			if (j + 2 > len - 20) {
+			if (j + 2 > len - 10) {
 				t_pos.sta_left = true;
 				t_pos.station_id = ptr_route->route_info[k].back().station_eid;
 			}
@@ -405,22 +407,22 @@ void SubwayHead::PushStationToFront(int k) {
 	MyDeque::position t_pos;
 	int len = sqrt((sx - ex) * (sx - ex) + (sy - ey) * (sy - ey));
 
-	for (int j = len - 20; j >= 20; j -= 2) {
+	for (int j = len - 10; j >= 10; j -= 2) {
 		t_pos.sx = sx;
 		t_pos.sy = sy;
 		t_pos.ex = ex;
 		t_pos.ey = ey;
 		t_pos.station_id = -1;
 		t_pos.wait_pos = false;
-		if (j == len - 20 || j - 2 < 20) {
+		if (j == len - 10 || j - 2 < 10) {
 			t_pos.wait_pos = true;
 			t_pos.sta_left = false;
 			t_pos.sta_right = false;
-			if (j == len - 20) {
+			if (j == len - 10) {
 				t_pos.sta_left = true;
 				t_pos.station_id = ptr_route->route_info[k].front().station_eid;
 			}
-			if (j - 2 < 20) {
+			if (j - 2 < 10) {
 				t_pos.sta_right = true;
 				t_pos.station_id = ptr_route->route_info[k].front().station_sid;
 			}

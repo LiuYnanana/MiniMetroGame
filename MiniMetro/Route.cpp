@@ -306,9 +306,10 @@ void Route::GetRouteInfo() {
 	int t_route_id;
 	while (true) {
 	//	mu_route.lock();
+	//	mp->mu_mouse.lock();
 		if (MouseHit() == true) {
 			m = GetMouseMsg();
-
+			LOG4CPLUS_ERROR(myLoger->rootLog, "线路鼠标点击 " << m.x << " " << m.y);
 			std::pair<int, int> t = JudgeOnStation(m.x, m.y);
 
 			if (t.first != -1) {       //鼠标命中站点
@@ -359,9 +360,11 @@ void Route::GetRouteInfo() {
 				}
 			}
 			//mu_route.unlock();
-			Sleep(1);
 		}
+		//Sleep(1);
+		//mp->mu_mouse.unlock();
 	}
+	LOG4CPLUS_ERROR(myLoger->rootLog, "Route 线程结束 ");
 } 
 
 void Route::DrawRoute() {

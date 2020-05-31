@@ -51,7 +51,7 @@ int main()
 	SubwayHead subway_head(p_route, p_station, p_track, p_map);
 	SubwayHead* p_sub_head = &subway_head;
 
-	Supply supply(p_sub_head, p_bridge, p_track, p_clock);
+	Supply supply(p_sub_head, p_bridge, p_track, p_clock, p_map);
 	Supply* p_supply = &supply;
 
 	MapData mapData(p_map, p_clock, p_sub_head, p_bridge, p_track, p_station, p_route, p_supply);
