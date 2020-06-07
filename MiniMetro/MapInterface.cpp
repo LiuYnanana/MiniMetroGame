@@ -22,9 +22,9 @@ void MapInterface::ShowMapInterface() {
 		ptr_clock->DrawClockPointer(clock_point++);
 
 		if (ptr_clock->week) {
-			std::thread t_supply(&Supply::DrawGovernmentSupply, ptr_supply);
-			//ptr_supply->DrawGovernmentSupply();
-			t_supply.join();
+			//std::thread t_supply(&Supply::DrawGovernmentSupply, ptr_supply);
+			ptr_supply->DrawGovernmentSupply();
+			//t_supply.join();
 			ptr_clock->week = false;
 			cleardevice();
 		}
@@ -39,12 +39,19 @@ void MapInterface::ShowMapInterface() {
 		ptr_route->DrawRoute();
 		ptr_sub_head->DrawSubwayHeadMove();
 		ptr_station->DrawStationPassager();
-
+		ptr_station->DrawPassagerWarning();
 		FlushBatchDraw();
 		Sleep(100);
 		cleardevice();
+		if (end) {
+			std::cout << end << std::endl;
+			break;
+		}
+		std::cout << "while" << std::endl;
 	}
-
+	std::cout << "interface!" << std::endl;
 	EndBatchDraw();
+	
 
+	std::cout << "interface!!" << std::endl;
 }

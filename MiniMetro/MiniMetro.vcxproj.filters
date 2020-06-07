@@ -66,6 +66,21 @@
     <ClCompile Include="Supply.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StartGame.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="City.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Redis.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Rank.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h">
@@ -111,6 +126,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Supply.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StartGame.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="City.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Redis.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Rank.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

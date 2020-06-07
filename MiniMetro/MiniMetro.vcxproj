@@ -74,6 +74,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>E:\CodeTool\redis-3.0\redis-3.0\src;E:\CodeTool\redis-3.0\redis-3.0\deps\hiredis;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\CodeTool\redis-3.0\redis-3.0\msvs\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -105,7 +107,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>E:\MiniMetro\MiniMetroGame\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);log4cplusD.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);log4cplusD.lib;hiredis.lib;Win32_Interop.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,16 +144,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bridge.cpp" />
+    <ClCompile Include="City.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapData.cpp" />
+    <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="MyDeque.cpp" />
     <ClCompile Include="MyLogger.cpp" />
+    <ClCompile Include="Rank.cpp" />
+    <ClCompile Include="Redis.cpp" />
     <ClCompile Include="Route.cpp" />
     <ClCompile Include="MapInterface.cpp" />
+    <ClCompile Include="StartGame.cpp" />
     <ClCompile Include="Station.cpp" />
     <ClCompile Include="SubwayHead.cpp" />
     <ClCompile Include="Supply.cpp" />
@@ -161,16 +168,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bridge.h" />
+    <ClInclude Include="City.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapData.h" />
+    <ClInclude Include="Mouse.h" />
     <ClInclude Include="MyDeque.h" />
     <ClInclude Include="MyLogger.h" />
+    <ClInclude Include="Rank.h" />
+    <ClInclude Include="Redis.h" />
     <ClInclude Include="Route.h" />
     <ClInclude Include="MapInterface.h" />
+    <ClInclude Include="StartGame.h" />
     <ClInclude Include="Station.h" />
     <ClInclude Include="SubwayHead.h" />
     <ClInclude Include="Supply.h" />

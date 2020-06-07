@@ -15,15 +15,17 @@
 #include "Graphics.h"
 #include "MyLogger.h"
 #include <iostream>
+#include "Redis.h"
 
 extern std::mutex mu_draw;
+extern bool end;
 typedef std::vector<std::pair<int, int> > point_list;
 
 class Map
 {
 public:
 	Map();
-	Map(std::string, std::string);
+	Map(std::string, std::string, std::string);
 	//Map(Map&);
 	void RemoveAdjacentRiver();
 
@@ -68,7 +70,7 @@ public:
 	std::vector<int> v_station_shape;
 	std::mutex mu_map, mu_map_diver, mu_mouse;
 	std::vector < std::pair<int, std::vector<int> > > appear_sta_info;
-
+	std::string  place;
 };
 
 

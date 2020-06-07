@@ -3,13 +3,14 @@
 Station::Station(Map *mp){
 	ptr_map = mp;
 	sta_passager_pos.resize(100);
+	gameover = false;
 }
 
 Station::~Station(){}
 
 int Station::RandPassagerTime() { 
 	srand(time(NULL));
-	int k = sqrt(rand() % 100);
+	int k = sqrt(rand() % 30);
 	return k;
 }
 
@@ -154,37 +155,50 @@ std::pair<int, int> Station::GetPassagerOffset(int k, int cnt) {
 	}
 }
 
-void Station::DrawPassagerWarning(int k) {
+void Station::GetWarningInfo(int k, int t) {
 	int x = ptr_map->sta_appear[k].first;
 	int y = ptr_map->sta_appear[k].second;
 
 	double PI = acos(-1);
-	for (int i = 1; i <= 60; i++) {
+	//mu_warning.lock();
+	LOG4CPLUS_ERROR(myLoger->rootLog, "push line " << t);
+	warnning[k].clear();
+	for (int i = 1; i <= t; i++) {
 
-		mu_draw.lock();
+		//mu_draw.lock();
 		int x2 = static_cast<int>(x + (sin(i * (PI / 30))) * 4);
 		int y2 = static_cast<int>(y - (cos(i * (PI / 30))) * 4);
 
-		setlinecolor(RED);
-		line(x, y, x2, y2);
-		mu_draw.unlock();
-
-		Sleep(20000 / 60);
+		warn_line t_line;
+		t_line.sx = x;
+		t_line.sy = y;
+		t_line.ex = x2;
+		t_line.ey = y2;
+		warnning[k].push_back(t_line);
 	}
+	//mu_warning.unlock();
 
 }
 
+void Station::DrawPassagerWarning()
+{
+//	mu_warning.lock();
+	for (int i = 0; i < ptr_map->sta_appear.size(); i++) {
+		if (warnning[i].empty()) continue;
+		LOG4CPLUS_ERROR(myLoger->rootLog, "warnning[i].size " << warnning[i].size());
+		for (auto l : warnning[i]) {
+			setlinecolor(RED);
+			line(l.sx, l.sy, l.ex, l.ey);
+		}
+	}
+	//LOG4CPLUS_ERROR(myLoger->rootLog, "gameover " << gameover);
+	if (gameover) DrawEndPicture();
+	//mu_warning.unlock();
+}
+
 void Station::CanclePassagerWarning(int k) {
-	int x = ptr_map->sta_appear[k].first;
-	int y = ptr_map->sta_appear[k].second;
-
-	int shape = ptr_map->v_station_shape[k];
-
-	mu_draw.lock();
-	DrawShape(x, y, shape);
-
-	mu_draw.unlock();
-
+	warnning[k].clear();
+	LOG4CPLUS_ERROR(myLoger->rootLog, "warnning " << warnning[k].size());
 
 }
 
@@ -200,14 +214,15 @@ void Station::GetStationPassagerInfo() {
 
 		int sta_num;
 		
+		mu_warning.lock();
 		do {
 			sta_num = rand() % ptr_map->sta_appear.size(); //确定给哪个站点增加新乘客
 			LOG4CPLUS_DEBUG(myLoger->rootLog, "the passager at " << sta_num << "station");
 		} while (find_if(sta_overtime.begin(), sta_overtime.end(), [
 			sta_num](const std::pair<int, int> a) {return a.first == sta_num; }) != sta_overtime.end());
+		mu_warning.unlock();
 
-
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "finally the passager at " << sta_num << "station");
+		LOG4CPLUS_ERROR(myLoger->rootLog, "finally the passager at " << sta_num << "station");
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "the shape_shape have:");
 
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "the shape_num start rand...");
@@ -220,40 +235,60 @@ void Station::GetStationPassagerInfo() {
 		} while (ptr_map->v_station_shape[shape_num] == ptr_map->v_station_shape[sta_num]);
 		
 		mu_station.lock();
-		std::pair<int, int> offset = GetPassagerOffset(sta_num, -1);
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "offset.first is" << offset.first);
-		
 	
 
-		LOG4CPLUS_DEBUG(myLoger->rootLog, "offset.first is" << offset.first);
-		std::vector<int> v = GetShapePoint(ptr_map->sta_appear[sta_num].first + offset.first,
-			ptr_map->sta_appear[sta_num].second + offset.second,
-			ptr_map->v_station_shape[shape_num], 1);
+	    //passager_shape t_struct;
+		//t_struct.shape = ptr_map->v_station_shape[shape_num];
+		//t_struct.v_point = v;
+		sta_passager_pos[sta_num].push_back(ptr_map->v_station_shape[shape_num]);
 
-		
-
-		passager_shape t_struct;
-		t_struct.shape = ptr_map->v_station_shape[shape_num];
-		t_struct.v_point = v;
-		sta_passager_pos[sta_num].push_back(t_struct);
-
+		LOG4CPLUS_ERROR(myLoger->rootLog, "the station id is " << sta_num);
+		for (auto i : sta_passager_pos[sta_num]) {
+			LOG4CPLUS_ERROR(myLoger->rootLog, "the shape_num is " << i);
+		}
 		mu_station.unlock();
+		LOG4CPLUS_ERROR(myLoger->rootLog, "sta_passager " << sta_passager_pos[sta_num].size());
 		if (sta_passager_pos[sta_num].size() == 8) { //車站到達最大承載量
+			LOG4CPLUS_ERROR(myLoger->rootLog, "第 " << sta_num << "个车站，人数超量");
 			sta_overtime.push_back(std::make_pair(sta_num, time(NULL)));
-		//	DrawPassagerWarning(sta_num);
+		
 		}
 		int t = RandPassagerTime();
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "passager appear time " << t);
+		if (end) return;
 		Sleep(t * 1000);
 	}
 
 }
 
 void Station::DrawStationPassager() {
-	for (auto i : sta_passager_pos) {
+	for (int i = 0; i < sta_passager_pos.size(); i++) {
+		for(int j = 0; j < sta_passager_pos[i].size(); j++) {
+			int shape = sta_passager_pos[i][j];
+			std::pair<int, int> offset = GetPassagerOffset(j, j);
+			std::vector<int> v = GetShapePoint(ptr_map->sta_appear[i].first + offset.first,
+				ptr_map->sta_appear[i].second + offset.second,
+				shape, 1);
+			if (shape == 3 || shape == 4) {
+				setfillcolor(BLACK);
+				Graphics::DrawGraphics(shape * 2, v);
+			}
+			else {
+				setlinecolor(BLACK);
+				setfillcolor(BLACK);
+				Graphics::DrawGraphics(shape * 2 + 1, v);
+			}
+		}
+	}
+	/*for (auto i : sta_passager_pos) {
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "Here");
 		for (auto j : i) {
 			LOG4CPLUS_DEBUG(myLoger->rootLog, "sta_passager_pos has passagers" );
+			
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "offset.first is" << offset.first);
+
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "offset.first is" << offset.first);
+			
 			if (j.shape == 3 || j.shape == 4) {
 				setfillcolor(BLACK);
 				Graphics::DrawGraphics(j.shape * 2, j.v_point);
@@ -265,45 +300,66 @@ void Station::DrawStationPassager() {
 			}
 		}
 		
-	}
+	}*/
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "!Here");
 }
 
 void Station::DrawEndPicture() { 
 	cleardevice();
-
-	mu_draw.lock();
+	
+	//mu_draw.lock();
 	settextcolor(BLACK);
 	setbkmode(TRANSPARENT);
 
-	settextstyle(30, 0, _T("黑体"));
+	settextstyle(40, 0, _T("黑体"));
 	TCHAR s[] = _T("游戏结束");
 	outtextxy(x - 400, 200, s);
 
-	mu_draw.unlock();
+	FlushBatchDraw();
+	while(true) {
+		
+	}
+	//mu_draw.unlock();
+	cleardevice();
 }
 
 void Station::MonitorStationOvertime() {
 	bool flag = false;
 	while (true) {
 		int i = 0;
+		mu_warning.lock();
 		while (sta_overtime.size()) {
 			if (i == sta_overtime.size()) {
 				i = 0;
 			}
-
-			int t = time(NULL);
-			if (t - sta_overtime[i].second == 100) {
-				LOG4CPLUS_DEBUG(myLoger->rootLog, "start change image...");
-				//IMAGE img;
-				//getimage(&img, 0, 0, x + 200, y);
-				DrawEndPicture();
-				flag = true;
-				LOG4CPLUS_DEBUG(myLoger->rootLog, "change image end...");
-				break;
+			int sta_num = sta_overtime[i].first;
+			if (sta_passager_pos[sta_num].size() < 8) {
+				CanclePassagerWarning(sta_num);
+				//从sta_overtime中删除
+				sta_overtime.erase(sta_overtime.begin() + i);
+				LOG4CPLUS_ERROR(myLoger->rootLog, "after erase size " << sta_overtime.size());
+				LOG4CPLUS_ERROR(myLoger->rootLog, "sta_passager_pos size " << sta_passager_pos[sta_num].size());
 			}
-			i++;
+			else {
+				int t = time(NULL);
+			//	LOG4CPLUS_ERROR(myLoger->rootLog, "t " << t << " " << sta_overtime[i].second);
+				GetWarningInfo(sta_num, t - sta_overtime[i].second);
+			
+				if (t - sta_overtime[i].second == 60) {
+					LOG4CPLUS_ERROR(myLoger->rootLog, "start change image...");
+					gameover = true;
+
+					flag = true;
+					LOG4CPLUS_DEBUG(myLoger->rootLog, "change image end...");
+					break;
+				}
+				i++;
+			}
+			if (sta_overtime.size() == 0) break;
+			if (end) return;
 		}
+		mu_warning.unlock();
 		if (flag) break;
+		if (end) return;
 	}
 }

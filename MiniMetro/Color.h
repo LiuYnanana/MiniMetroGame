@@ -3,7 +3,7 @@
 #include <conio.h>
 #include <graphics.h>
 
-
+extern bool end;
 class Color
 {
 public:

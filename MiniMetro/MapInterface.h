@@ -8,6 +8,7 @@
 #include "MyLogger.h"
 #include "Supply.h"
 #include <thread>
+extern bool end;
 class MapInterface
 {
 public:

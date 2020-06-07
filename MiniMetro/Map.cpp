@@ -3,10 +3,11 @@
 Map::Map() {
 	myLoger = MyLogger::GetInstance();
 }
-Map::Map(std::string _river, std::string _station){
+Map::Map(std::string _river, std::string _station, std::string _place){
 	myLoger = MyLogger::GetInstance();
 	river_path = _river;
 	station_path = _station;
+	place = _place;
 }
 
 //Map::Map(Map& mp) {
@@ -18,9 +19,12 @@ Map::~Map() {}
 
 
 void Map::GetStation() {
-	File station_file;
+	//File station_file;
 	std::vector<std::string> p; 
-	station_file.ReadTxt(station_path, p);
+	Redis redis_station;
+	redis_station.connect("127.0.0.1", 6379);
+	p = redis_station.GetList(place + "_station");
+	//station_file.ReadTxt(station_path, p);
 	
 	for(auto i : p) {
 		int x, y;
@@ -51,15 +55,18 @@ void Map::RemoveAdjacentRiver() {
 	river.clear();
 	for (auto i : t) {
 		river.push_back(i);
-		LOG4CPLUS_ERROR(myLoger->rootLog, "river info " << i.first << " " << i.second);
+	//	LOG4CPLUS_ERROR(myLoger->rootLog, "river info " << i.first << " " << i.second);
 	}
 
 }
 
 void Map::GetRiver() {
-	File river_file;
+	//File river_file;
 	std::vector<std::string> p;
-	river_file.ReadTxt(river_path, p);
+	Redis redis_river;
+	redis_river.connect("127.0.0.1", 6379);
+	p = redis_river.GetList(place + "_river");
+	//river_file.ReadTxt(river_path, p);
 	mu_map_diver.lock();
 	for (auto i : p) {
 		int x, y;
@@ -73,7 +80,7 @@ void Map::GetRiver() {
 	mu_map_diver.unlock();
 
 	RemoveAdjacentRiver();
-	LOG4CPLUS_INFO(myLoger->rootLog, "map river'points number is " << river.size());
+	LOG4CPLUS_ERROR(myLoger->rootLog, "map river'points number is " << river.size());
 }
 
 
@@ -347,6 +354,7 @@ void Map::GetStationInfo() {
 		if (cnt_appear_sta == 1) k = 0;
 		LOG4CPLUS_INFO(myLoger->rootLog, "station appear time interval is " << k << "ms");
 		
+		if (end) return;
 		Sleep(k * 100);
 	}
 	LOG4CPLUS_ERROR(myLoger->rootLog, "appear staton number is " << sta_appear.size());
@@ -355,10 +363,23 @@ void Map::GetStationInfo() {
 void Map::DrawStation() {
 	for (auto i : appear_sta_info) {
 		setlinecolor(BLACK);
-		setfillcolor(WHITE);
+		setfillcolor(WHITE); 
 		
 		Graphics::DrawGraphics(i.first, i.second);
 	}
+	rectangle(15, 20, 35, 30);
+	line(15, 15, 15, 35);
+	line(15, 15, 5, 25);
+	line(15, 35, 5, 25);
+
+	settextcolor(BLACK);
+	setbkmode(TRANSPARENT);
+	settextstyle(20, 0, _T("ºÚÌå"));
+
+	TCHAR s[] = _T("ÍË³ö");
+	outtextxy(40, 15, s);
+
+//	line(10, 15, 80, 30);
 }
 
 void Map::DrawMap() {

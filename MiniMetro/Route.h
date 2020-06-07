@@ -11,7 +11,7 @@
 #include "MyLogger.h"
 #include "Station.h"
 #include "Bridge.h"
-
+extern bool end;
 class Route:public Track
 {
 public:
@@ -37,7 +37,7 @@ public:
 	
 	void StationDFS(int, int, int, int, bool, bool);
 	void GetConnectionInfo();
-	void GetRouteInfo();
+	void GetRouteInfo(MOUSEMSG, int&, int&, int&, int&);
 	void DrawRoute();
 	route_point GetRouteEndpoint(int, int, int, int);
 	std::vector<std::deque<route_point> > route_info;

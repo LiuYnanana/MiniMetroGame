@@ -9,7 +9,7 @@
 #include <iostream>
 
 #define MY_LOG_FILE_PATH "E:\\MiniMetro\\MiniMetroGame\\log\\logconfig.property"
-
+extern bool end;
 class MyLogger
 {
 public:

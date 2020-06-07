@@ -5,6 +5,7 @@
 #include "Clock.h"
 #include "MyLogger.h"
 #include "Map.h"
+extern bool end;
 class Supply
 {
 public:

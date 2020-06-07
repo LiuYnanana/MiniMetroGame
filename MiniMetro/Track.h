@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Color.h"
 #include "Mylogger.h"
-
+extern bool end;
 class Track
 {
 public:

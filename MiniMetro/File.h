@@ -5,7 +5,7 @@
 #include <cassert>
 #include <iostream>
 #include "MyLogger.h"
-
+extern bool end;
 class File
 {
 public:

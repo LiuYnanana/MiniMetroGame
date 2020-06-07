@@ -12,6 +12,7 @@
 #include "Track.h"
 #include "MyDeque.h"
 #include <mutex>
+extern bool end;
 class SubwayHead
 {
 public:
@@ -35,7 +36,7 @@ public:
 	void DrawSubwayHead();
 	void DrawSubwaySelect();
 	
-	void GetSelectInfo();
+	void GetSelectInfo(MOUSEMSG);
 	std::pair<int, int> GetPassagerPos(int);
 	std::vector<int> GetShapePoint(int, int, int, int);
 	std::pair<int, int> GetNewPos(int, int, int, int, int);
@@ -67,6 +68,8 @@ public:
 	bool have_sub_head;
 	bool select_sub;
 	std::vector<std::pair<int, int> > select_subway;
+
+	int people;
 private:
 	int  r = 34;
 	std::mutex mu_sub_head;

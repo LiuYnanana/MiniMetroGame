@@ -12,7 +12,7 @@
 
 #define PI acos(-1)
 extern std::mutex mu_draw;
-
+extern bool end;
 class Clock
 {
 public:

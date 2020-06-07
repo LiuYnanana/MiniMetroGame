@@ -6,7 +6,7 @@
 #include <easyx.h>
 #include <vector>
 #include "MyLogger.h"
-
+extern bool end;
 class Bridge	
 {
 public:

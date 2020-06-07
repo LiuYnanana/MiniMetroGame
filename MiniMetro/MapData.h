@@ -8,10 +8,12 @@
 #include "Route.h"
 #include <thread>
 #include "Supply.h"
+#include "mouse.h"
+extern bool end;
 class MapData
 {
 public:
-	MapData(Map*, Clock*, SubwayHead*, Bridge*, Track*, Station*, Route*, Supply*);
+	MapData(Map*, Clock*, SubwayHead*, Bridge*, Track*, Station*, Route*, Supply*, Mouse*);
 	void InitMap();
 	void GetDrawMapData();
 private:
@@ -23,5 +25,6 @@ private:
 	Station* ptr_station;
 	Route* ptr_route;
 	Supply* ptr_supply;
+	Mouse* ptr_mouse;
 };
 

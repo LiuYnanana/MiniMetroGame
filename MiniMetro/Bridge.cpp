@@ -25,8 +25,6 @@ void Bridge::DrawNoBridge() {
 		TCHAR s[] = _T("ÎÞ¿ÉÓÃÇÅÁº");
 		outtextxy(20, 480, s);
 	}
-
-	
 }
 
 void Bridge::DrawOneBridge(int x, int y) {
@@ -58,6 +56,7 @@ void Bridge::DrawBridge() {
 	GetBridgeInfo();
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "start draw bridge");
 	if (bridge_info.size() == 0) have_bridge = false;
+	else have_bridge = true;
 	DrawNoBridge();
 	for (auto i : bridge_info) {
 		int x = i.first, y = i.second;

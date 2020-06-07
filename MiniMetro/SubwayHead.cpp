@@ -10,7 +10,7 @@ SubwayHead::SubwayHead(Route* _route, Station* _station, Track* _track, Map* _ma
 	
 	for (int i = 0; i < 10; i++) {
 		MyDeque _mydq;
-		LOG4CPLUS_ERROR(myLoger->rootLog, "构造 " << _mydq.left_q << " " << _mydq.right_q);
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "构造 " << _mydq.left_q << " " << _mydq.right_q);
 		pos_info.push_back(_mydq);
 
 	}
@@ -23,6 +23,7 @@ SubwayHead::SubwayHead(Route* _route, Station* _station, Track* _track, Map* _ma
 	used_sub_head = 0;
 	sub_hold_passager = 3;
 
+	people = 0;
 	for (int i = 0; i < 10; i++) {
 		subHead_num[i] = 1;
 		for (int j = 0; j < 10; j++) {
@@ -136,6 +137,7 @@ void SubwayHead::DrawSubwayHead() {
 		DrawNoSubwayHead();
 		select_sub = false;
 	}
+	else have_sub_head = true;
 
 	if (select_sub) {
 		select_subway.clear();
@@ -256,37 +258,26 @@ std::vector<int> SubwayHead::GetShapePoint(int x, int y, int k, int grade) {
 }
 
 
-void SubwayHead::GetSelectInfo()
+void SubwayHead::GetSelectInfo(MOUSEMSG m)
 {
-	bool flag = false;
-	while (true) {
-		//ptr_map->mu_mouse.lock();
-		flag = false;
-		if (MouseHit() == true) {
-			MOUSEMSG m = GetMouseMsg();
-			LOG4CPLUS_DEBUG(myLoger->rootLog, "mouse subway " << m.x << " " << m.y);
-			if (m.mkLButton == true && JudgeOnSubPic(m.x, m.y)) {
-				select_sub = true;
-			}
-			else if (m.mkLButton == true && JudgeCloseSubPic(m.x, m.y)) {
+	if (m.mkLButton == true && JudgeOnSubPic(m.x, m.y)) {
+		select_sub = true;
+	}
+	else if (m.mkLButton == true && JudgeCloseSubPic(m.x, m.y)) {
+		select_sub = false;
+	}
+	else if (m.mkLButton == true && select_sub && have_sub_head) {
+		for (int i = 0; i < select_subway.size(); i++) {
+			int x = select_subway[i].first, y = select_subway[i].second;
+			if ((m.x - x) * (m.x - x) + (m.y - y) * (m.y - y) <= 10 * 10) {
+				subHead_num[i]++;
+				used_sub_head++;
+				LOG4CPLUS_ERROR(myLoger->rootLog, "点击增加地铁 " << subHead_num[i] << " " << used_sub_head);
 				select_sub = false;
+			//	Sleep(3000);
+			//	break;
 			}
-			else if (m.mkLButton == true && select_sub) {
-				if (!have_sub_head) continue;
-				for (int i = 0; i < select_subway.size(); i++) {
-					int x = select_subway[i].first, y = select_subway[i].second;
-					if ((m.x - x) * (m.x - x) + (m.y - y) * (m.y - y) <= 10 * 10) {
-						subHead_num[i]++;
-						used_sub_head++;
-						LOG4CPLUS_ERROR(myLoger->rootLog, "点击增加地铁 " << subHead_num[i] << " " << used_sub_head);
-						select_sub = false;
-						Sleep(3000);
-						break;
-					}
-				}
-			}
-		}	
-		//ptr_map->mu_mouse.unlock();
+		}
 	}
 }
 
@@ -387,13 +378,13 @@ void SubwayHead::PushStationToBack(int k) {
 		LOG4CPLUS_DEBUG(myLoger->rootLog, "!t_pos info" << t_pos.sx << " " << t_pos.sy <<
 			" " << t_pos.ex << " " << t_pos.ey << "; " << t_pos.x << " " << t_pos.y);
 
-		LOG4CPLUS_ERROR(myLoger->rootLog, k << " 双向对列 前后端 " << pos_info[k].front_pos() <<
+		LOG4CPLUS_DEBUG(myLoger->rootLog, k << " 双向对列 前后端 " << pos_info[k].front_pos() <<
 			" " << pos_info[k].end_pos());
 
 		pos_info[k].push_back(t_pos);
-		LOG4CPLUS_ERROR(myLoger->rootLog, "t_pos info" << t_pos.sx << " " << t_pos.sy <<
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "t_pos info" << t_pos.sx << " " << t_pos.sy <<
 			" " << t_pos.ex << " " << t_pos.ey << "; " << t_pos.x << " " << t_pos.y);
-		LOG4CPLUS_ERROR(myLoger->rootLog, "station_id" << t_pos.station_id << " " << t_pos.sta_left <<
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "station_id" << t_pos.station_id << " " << t_pos.sta_left <<
 			" " << t_pos.sta_right);
 	}
 }
@@ -434,23 +425,23 @@ void SubwayHead::PushStationToFront(int k) {
 		t_pos.x = t_pair.first;
 		t_pos.y = t_pair.second;
 
-		LOG4CPLUS_ERROR(myLoger->rootLog, k << "2号的变化 " << pos_info[2].front_pos() <<
+		LOG4CPLUS_DEBUG(myLoger->rootLog, k << "2号的变化 " << pos_info[2].front_pos() <<
 			" " << pos_info[2].end_pos());
-		LOG4CPLUS_ERROR(myLoger->rootLog, k << " 双向对列 前后端 " << pos_info[k].front_pos() <<
+		LOG4CPLUS_DEBUG(myLoger->rootLog, k << " 双向对列 前后端 " << pos_info[k].front_pos() <<
 			" " << pos_info[k].end_pos());
 		pos_info[k].push_front(t_pos);
-		LOG4CPLUS_ERROR(myLoger->rootLog, "t_pos info" << t_pos.sx << " " << t_pos.sy <<
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "t_pos info" << t_pos.sx << " " << t_pos.sy <<
 			" " << t_pos.ex << " " << t_pos.ey << "; " << t_pos.x << " " << t_pos.y);
-		LOG4CPLUS_ERROR(myLoger->rootLog, "station_id" << t_pos.station_id << " " << t_pos.sta_left <<
+		LOG4CPLUS_DEBUG(myLoger->rootLog, "station_id" << t_pos.station_id << " " << t_pos.sta_left <<
 			" " << t_pos.sta_right);
 	}
 
 }
 
 void SubwayHead::GetSubHeadPos(subHead& t_subHead, int i, int j) {
-	LOG4CPLUS_ERROR(myLoger->rootLog,  "2号的变化 " << pos_info[2].front_pos() <<
+	LOG4CPLUS_DEBUG(myLoger->rootLog,  "2号的变化 " << pos_info[2].front_pos() <<
 		" " << pos_info[2].end_pos());
-	LOG4CPLUS_ERROR(myLoger->rootLog, "GetSubHeadPos" << i << " " << sub_now_pos[i][j].first);
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "GetSubHeadPos" << i << " " << sub_now_pos[i][j].first);
 	t_subHead.pos_x = pos_info[i][sub_now_pos[i][j].first].x;
 	t_subHead.pos_y = pos_info[i][sub_now_pos[i][j].first].y;
 	t_subHead.wait_pos = pos_info[i][sub_now_pos[i][j].first].wait_pos;
@@ -506,31 +497,31 @@ void SubwayHead::GetSubHeadPos(subHead& t_subHead, int i, int j) {
 }
 
 void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
-	LOG4CPLUS_ERROR(myLoger->rootLog,  "2号的变化 " << pos_info[2].front_pos() <<
+	LOG4CPLUS_DEBUG(myLoger->rootLog,  "2号的变化 " << pos_info[2].front_pos() <<
 		" " << pos_info[2].end_pos());
 	//-----------------乘客上下车----------
-	LOG4CPLUS_ERROR(myLoger->rootLog, "这里车站号 " << t_subHead.station_id);
+	LOG4CPLUS_DEBUG(myLoger->rootLog, "这里车站号 " << t_subHead.station_id);
 	if (t_subHead.wait_pos) {       //载客
 		if (t_subHead.director) {    // 从前往后行驶
-			LOG4CPLUS_ERROR(myLoger->rootLog, "车从先向后行驶");
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "车从先向后行驶");
 			if (t_subHead.sta_right) { //上车
-				LOG4CPLUS_ERROR(myLoger->rootLog, "上车");
+				LOG4CPLUS_DEBUG(myLoger->rootLog, "上车");
 				if (passager_shape[i][j].size() < sub_hold_passager) {
-					LOG4CPLUS_ERROR(myLoger->rootLog, "车站号 " << t_subHead.station_id);
+					LOG4CPLUS_DEBUG(myLoger->rootLog, "车站号 " << t_subHead.station_id);
 			/*		for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
 						LOG4CPLUS_ERROR(myLoger->rootLog, "该站乘客形状" << i.shape);
 					}*/
 
-					std::vector<Station::passager_shape>::iterator it;
+					std::vector<int>::iterator it;
 					for (it = ptr_station->sta_passager_pos[t_subHead.station_id].begin();
 						it != ptr_station->sta_passager_pos[t_subHead.station_id].end(); ) {
 
-						LOG4CPLUS_ERROR(myLoger->rootLog, " 正向 map 车站 路线 形状 这条路能否到达" << t_subHead.station_id << " " << t_subHead.route_id
-						<< " " << it->shape << " " <<ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][it->shape]);
+						LOG4CPLUS_DEBUG(myLoger->rootLog, " 正向 map 车站 路线 形状 这条路能否到达" << t_subHead.station_id << " " << t_subHead.route_id
+						<< " " << *it << " " <<ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][*it]);
 
-						if (ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][it->shape]) {
-							passager_shape[i][j].push_back(it->shape);
-							LOG4CPLUS_ERROR(myLoger->rootLog,  it->shape << "形状上车了");
+						if (ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][*it]) {
+							passager_shape[i][j].push_back(*it);
+							LOG4CPLUS_DEBUG(myLoger->rootLog,  *it << "形状上车了");
 							it = ptr_station->sta_passager_pos[t_subHead.station_id].erase(it);
 						}
 						else it++;
@@ -539,19 +530,19 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
 					}
 
 					for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
-						LOG4CPLUS_DEBUG(myLoger->rootLog, "!possager info " << i.shape);
+						LOG4CPLUS_DEBUG(myLoger->rootLog, "!possager info " << *it);
 					}
 				}
 
-				ptr_station->mu_station.lock();
-				int cnt = 0;
-				for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
-					std::pair<int, int> offset = ptr_station->GetPassagerOffset(t_subHead.station_id, cnt++);
-					std::vector<int> v = ptr_station->GetShapePoint(ptr_map->sta_appear[t_subHead.station_id].first + offset.first,
-						ptr_map->sta_appear[t_subHead.station_id].second + offset.second,
-						i.shape, 1);
-				}
-				ptr_station->mu_station.unlock();
+				//ptr_station->mu_station.lock();
+				//int cnt = 0;
+				//for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
+				//	std::pair<int, int> offset = ptr_station->GetPassagerOffset(t_subHead.station_id, cnt++);
+				//	std::vector<int> v = ptr_station->GetShapePoint(ptr_map->sta_appear[t_subHead.station_id].first + offset.first,
+				//		ptr_map->sta_appear[t_subHead.station_id].second + offset.second,
+				//		i.shape, 1);
+				//}
+				//ptr_station->mu_station.unlock();
 			}
 
 			if (t_subHead.sta_left) { //下车
@@ -564,6 +555,7 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
 					LOG4CPLUS_DEBUG(myLoger->rootLog, "next_sta" << next_sta);
 					if (ptr_map->v_station_shape[t_subHead.station_id] == *it) {
 						it = passager_shape[i][j].erase(it);
+						people++;
 					}
 					else if (next_sta == -1 || (next_sta != -1 && !ptr_route->station_arrive[next_sta][t_subHead.route_id][1][*it]
 						&& ptr_station->sta_passager_pos[t_subHead.station_id].size() < 8)) {
@@ -572,10 +564,7 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
 							ptr_map->sta_appear[t_subHead.station_id].second + offset.second,
 							*it, 1);
 						
-						Station::passager_shape t_struct;
-						t_struct.shape = *it;
-						t_struct.v_point = v;
-						ptr_station->sta_passager_pos[t_subHead.station_id].push_back(t_struct);
+						ptr_station->sta_passager_pos[t_subHead.station_id].push_back(*it);
 
 						it = passager_shape[i][j].erase(it);
 					}
@@ -587,25 +576,25 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
 
 		}
 		else {
-			LOG4CPLUS_ERROR(myLoger->rootLog, "车从后往前行驶");
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "车从后往前行驶");
 			if (t_subHead.sta_left) { //上车
-				LOG4CPLUS_ERROR(myLoger->rootLog, "上车");
+				LOG4CPLUS_DEBUG(myLoger->rootLog, "上车");
 				if (passager_shape[i][j].size() < sub_hold_passager) {
 
 					for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
-						LOG4CPLUS_DEBUG(myLoger->rootLog, "!possager info " << i.shape);
+						LOG4CPLUS_DEBUG(myLoger->rootLog, "!possager info " << i);
 					}
-					LOG4CPLUS_ERROR(myLoger->rootLog, "车站号 " << t_subHead.station_id);
-					std::vector<Station::passager_shape>::iterator it;
+					LOG4CPLUS_DEBUG(myLoger->rootLog, "车站号 " << t_subHead.station_id);
+					std::vector<int>::iterator it;
 					for (it = ptr_station->sta_passager_pos[t_subHead.station_id].begin();
 						it != ptr_station->sta_passager_pos[t_subHead.station_id].end(); ) {
 
-						LOG4CPLUS_ERROR(myLoger->rootLog, " 反向 map 车站 路线 形状 这条路能否到达" << t_subHead.station_id << " " << t_subHead.route_id
-							<< " " << it->shape << " " << ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][it->shape]);
+						LOG4CPLUS_DEBUG(myLoger->rootLog, " 反向 map 车站 路线 形状 这条路能否到达" << t_subHead.station_id << " " << t_subHead.route_id
+							<< " " << *it << " " << ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][1][*it]);
 
-						if (ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][0][it->shape]) {
-							passager_shape[i][j].push_back(it->shape);
-							LOG4CPLUS_ERROR(myLoger->rootLog, it->shape << "形状上车了");
+						if (ptr_route->station_arrive[t_subHead.station_id][t_subHead.route_id][0][*it]) {
+							passager_shape[i][j].push_back(*it);
+							LOG4CPLUS_DEBUG(myLoger->rootLog, *it << "形状上车了");
 							it = ptr_station->sta_passager_pos[t_subHead.station_id].erase(it);
 						}
 						else it++;
@@ -614,11 +603,11 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
 					}
 
 					for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
-						LOG4CPLUS_DEBUG(myLoger->rootLog, "!possager info " << i.shape);
+						LOG4CPLUS_DEBUG(myLoger->rootLog, "!possager info " << i);
 					}
 				}
 
-				ptr_station->mu_station.lock();
+			/*	ptr_station->mu_station.lock();
 				int cnt = 0;
 				for (auto i : ptr_station->sta_passager_pos[t_subHead.station_id]) {
 					std::pair<int, int> offset = ptr_station->GetPassagerOffset(t_subHead.station_id, cnt++);
@@ -626,7 +615,7 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
 						ptr_map->sta_appear[t_subHead.station_id].second + offset.second,
 						i.shape, 1);
 				}
-				ptr_station->mu_station.unlock();
+				ptr_station->mu_station.unlock();*/
 			}
 			 
 			if (t_subHead.sta_right) { //下车
@@ -639,6 +628,7 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
 					LOG4CPLUS_DEBUG(myLoger->rootLog, "next_sta" << next_sta);
 					if (ptr_map->v_station_shape[t_subHead.station_id] == *it) {
 						it = passager_shape[i][j].erase(it);
+						people++;
 					}
 					else if (next_sta == -1 || (next_sta != -1 && !ptr_route->station_arrive[next_sta][t_subHead.route_id][0][*it]
 						&& ptr_station->sta_passager_pos[t_subHead.station_id].size() < 8)) {
@@ -647,10 +637,8 @@ void SubwayHead::DealPassagers(subHead& t_subHead, int i, int j) {
 							ptr_map->sta_appear[t_subHead.station_id].second + offset.second,
 							*it, 1);
 
-						Station::passager_shape t_struct;
-						t_struct.shape = *it;
-						t_struct.v_point = v;
-						ptr_station->sta_passager_pos[t_subHead.station_id].push_back(t_struct);
+						
+						ptr_station->sta_passager_pos[t_subHead.station_id].push_back(*it);
 
 						it = passager_shape[i][j].erase(it);
 					}
@@ -673,19 +661,19 @@ void SubwayHead::GetSubwayHeadInfo() {
 			
 			if (ptr_route->route_info[k].back().ex != pos_info[k].back().ex ||
 				ptr_route->route_info[k].back().ey != pos_info[k].back().ey) {  // 向后push站点
-				LOG4CPLUS_ERROR(myLoger->rootLog, "向后添加站点");
-				LOG4CPLUS_ERROR(myLoger->rootLog,  "2号的变化 " << pos_info[2].front_pos() <<
+				LOG4CPLUS_DEBUG(myLoger->rootLog, "向后添加站点");
+				LOG4CPLUS_DEBUG(myLoger->rootLog,  "2号的变化 " << pos_info[2].front_pos() <<
 					" " << pos_info[2].end_pos());
 				PushStationToBack(k);
-				LOG4CPLUS_ERROR(myLoger->rootLog, "2号的变化 " << pos_info[2].front_pos() <<
+				LOG4CPLUS_DEBUG(myLoger->rootLog, "2号的变化 " << pos_info[2].front_pos() <<
 					" " << pos_info[2].end_pos());
 			}
-			LOG4CPLUS_ERROR(myLoger->rootLog, "2号的变化 " << pos_info[2].front_pos() <<
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "2号的变化 " << pos_info[2].front_pos() <<
 				" " << pos_info[2].end_pos());
 			if (ptr_route->route_info[k].front().sx != pos_info[k].front().sx ||
 				ptr_route->route_info[k].front().sy != pos_info[k].front().sy) { //front 增加路线
-				LOG4CPLUS_ERROR(myLoger->rootLog, "向前添加站点");
-				LOG4CPLUS_ERROR(myLoger->rootLog,  "2号的变化 " << pos_info[2].front_pos() <<
+				LOG4CPLUS_DEBUG(myLoger->rootLog, "向前添加站点");
+				LOG4CPLUS_DEBUG(myLoger->rootLog,  "2号的变化 " << pos_info[2].front_pos() <<
 					" " << pos_info[2].end_pos());
 				PushStationToFront(k);
 			}
@@ -696,9 +684,9 @@ void SubwayHead::GetSubwayHeadInfo() {
 	
 		for (int i = 0; i < ptr_route->route_info.size(); i++) { // 跑n条线路
 			if (pos_info[i].empty()) continue;
-			LOG4CPLUS_ERROR(myLoger->rootLog, "第" << i << "条线路的地铁数量 " << subHead_num[i]);
+			LOG4CPLUS_DEBUG(myLoger->rootLog, "第" << i << "条线路的地铁数量 " << subHead_num[i]);
 			for (int j = 0; j < subHead_num[i]; j++) {
-				LOG4CPLUS_ERROR(myLoger->rootLog, "跑第" << i << "条线路 " << j);
+				LOG4CPLUS_DEBUG(myLoger->rootLog, "跑第" << i << "条线路 " << j);
 				subHead t_subHead;
 				GetSubHeadPos(t_subHead, i, j);
 				DealPassagers(t_subHead, i, j);
@@ -706,6 +694,7 @@ void SubwayHead::GetSubwayHeadInfo() {
 			}
 		}
 		mu_sub_head.unlock();
+		if (end) return;
 		Sleep(100);
 	}
 }
@@ -734,7 +723,13 @@ void SubwayHead::DrawSubwayHeadMove() {
 		}
 	}
 	mu_sub_head.unlock();
+	settextcolor(BLACK);
+	setbkmode(TRANSPARENT);
+	settextstyle(20, 0, _T("黑体"));
 
+	TCHAR s[10];
+	_stprintf(s, _T("%d"), people);
+	outtextxy(910, 70, s);
 }
 
 SubwayHead::~SubwayHead() {}

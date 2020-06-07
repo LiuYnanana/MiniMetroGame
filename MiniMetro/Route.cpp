@@ -299,70 +299,61 @@ void Route::GetConnectionInfo() {
 	mu_push_sta_id.unlock();
 }
 
-void Route::GetRouteInfo() {
-	MOUSEMSG m;
-	int sx = - 1, sy = -1;
-	int flag = -1;
-	int t_route_id;
-	while (true) {
-	//	mu_route.lock();
-	//	mp->mu_mouse.lock();
-		if (MouseHit() == true) {
-			m = GetMouseMsg();
-			LOG4CPLUS_ERROR(myLoger->rootLog, "线路鼠标点击 " << m.x << " " << m.y);
-			std::pair<int, int> t = JudgeOnStation(m.x, m.y);
+void Route::GetRouteInfo(MOUSEMSG m, int& sx, int& sy, int& flag, int& t_route_id) {
 
-			if (t.first != -1) {       //鼠标命中站点
-				if (m.uMsg == WM_LBUTTONDOWN) {
-					sx = t.first;
-					sy = t.second;
-					flag = sta_to_sta;
-				}
-
-				
-				if (m.uMsg == WM_LBUTTONUP && sx != -1 && sx != t.first) {
-					if (flag == sta_to_sta) {
-						ConnectStationToStation(sx, sy, t.first, t.second);
-					}
-					if (flag == sta_to_route) {
-						ConnectStationToRoute(t.first, t.second, sx, sy, t_route_id);
-					}
-					if (flag == route_to_sta) {
-						ConnectRouteToStation(sx, sy, t.first, t.second, t_route_id);
-					}
-					GetConnectionInfo();
-					flag = -1;
-					sx = -1;
-					sy = -1;
-				}
-			}
-
-			for (auto q_route : route_info) {
-				route_point t_f = q_route.front();
-				route_point t_b = q_route.back();
-
-				if (t_f.fsx != -1 && JudgeOnEndpoint(m.x, m.y, t_f.fsx, t_f.fsy)) {
-					if (m.uMsg == WM_LBUTTONDOWN) {
-						sx = t_f.sx;
-						sy = t_f.sy;
-						flag = sta_to_route;
-						t_route_id = t_f.route_id;
-					}
-				}
-
-				if (t_b.fex != -1 && JudgeOnEndpoint(m.x, m.y, t_b.fex, t_b.fey)) {
-					if (m.uMsg == WM_LBUTTONDOWN) {
-						sx = t_b.ex;
-						sy = t_b.ey;
-						flag = route_to_sta;
-						t_route_id = t_b.route_id;
-					}
-				}
-			}
-			//mu_route.unlock();
+	std::pair<int, int> t = JudgeOnStation(m.x, m.y);
+	LOG4CPLUS_ERROR(myLoger->rootLog, "Route 线路 进入函数 " << sx << " " << sy << " " << flag <<
+	" " << t_route_id);
+	if (t.first != -1) {       //鼠标命中站点
+		if (m.uMsg == WM_LBUTTONDOWN) {
+			sx = t.first;
+			sy = t.second;
+			flag = sta_to_sta;
+			LOG4CPLUS_ERROR(myLoger->rootLog, "Route 线路 sx sy " << sx << " " << sy);
 		}
-		//Sleep(1);
-		//mp->mu_mouse.unlock();
+
+		if (m.uMsg == WM_LBUTTONUP && sx != -1 && sx != t.first) {
+			LOG4CPLUS_ERROR(myLoger->rootLog, "Route 线路" << flag);
+			if (flag == sta_to_sta) {
+				ConnectStationToStation(sx, sy, t.first, t.second);
+			}
+			if (flag == sta_to_route && t_route_id != -1) {
+				ConnectStationToRoute(t.first, t.second, sx, sy, t_route_id);
+			}
+			if (flag == route_to_sta && t_route_id != -1) {
+				ConnectRouteToStation(sx, sy, t.first, t.second, t_route_id);
+			}
+			GetConnectionInfo();
+		}
+		if (m.uMsg == WM_LBUTTONUP) {
+			flag = -1;
+			sx = -1;
+			sy = -1;
+			t_route_id = -1;
+		}
+	}
+
+	for (auto q_route : route_info) {
+		route_point t_f = q_route.front();
+		route_point t_b = q_route.back();
+
+		if (t_f.fsx != -1 && JudgeOnEndpoint(m.x, m.y, t_f.fsx, t_f.fsy)) {
+			if (m.uMsg == WM_LBUTTONDOWN) {
+				sx = t_f.sx;
+				sy = t_f.sy;
+				flag = sta_to_route;
+				t_route_id = t_f.route_id;
+			}
+		}
+
+		if (t_b.fex != -1 && JudgeOnEndpoint(m.x, m.y, t_b.fex, t_b.fey)) {
+			if (m.uMsg == WM_LBUTTONDOWN) {
+				sx = t_b.ex;
+				sy = t_b.ey;
+				flag = route_to_sta;
+				t_route_id = t_b.route_id;
+			}
+		}
 	}
 	LOG4CPLUS_ERROR(myLoger->rootLog, "Route 线程结束 ");
 } 

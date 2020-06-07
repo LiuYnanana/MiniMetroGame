@@ -46,6 +46,7 @@ void Supply::DealSelectSupply() {
 			}
 		}
 		//ptr_map->mu_mouse.unlock();
+		if (end) return;
 		
 	}
 	LOG4CPLUS_ERROR(myLoger->rootLog, "供应模块结束");

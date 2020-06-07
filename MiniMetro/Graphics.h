@@ -3,6 +3,7 @@
 #include <easyx.h>			
 #include <conio.h>
 #include <iostream>
+extern bool end;
 class Graphics
 {
 public:

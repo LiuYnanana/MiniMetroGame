@@ -6,7 +6,7 @@
 #include "Graphics.h"
 #include "MyLogger.h"
 #include "Map.h"
-
+extern bool end;
 class Station:public Map
 {
 public:
@@ -17,8 +17,8 @@ public:
 	std::pair<int, int> GetPassagerOffset(int, int);
 	std::vector<int> GetShapePoint(int, int, int, int);
 
-
-	void DrawPassagerWarning(int);
+	void GetWarningInfo(int, int);
+	void DrawPassagerWarning();
 	void CanclePassagerWarning(int);
 	void GetStationPassagerInfo();
 	void DrawStationPassager();
@@ -26,13 +26,16 @@ public:
 	void MonitorStationOvertime();
 
 	void DrawEndPicture();
-	struct passager_shape {
-		int shape;
-		std::vector<int> v_point;
-	};
 
-	std::vector<std::vector<passager_shape> > sta_passager_pos; //哪一个站点  八位乘客的位置
-	std::mutex mu_station;
+	std::vector<std::vector<int> > sta_passager_pos; //哪一个站点 每位乘客
+	std::mutex mu_station, mu_warning;
+
+	struct warn_line {
+		int sx, sy;
+		int ex, ey;
+	};
+	std::vector<warn_line> warnning[100];
+	bool gameover;
 private:
 	Map* ptr_map;
 	
