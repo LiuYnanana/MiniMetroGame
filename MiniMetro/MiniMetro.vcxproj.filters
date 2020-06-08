@@ -81,6 +81,9 @@
     <ClCompile Include="Rank.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Mode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h">
@@ -141,6 +144,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Rank.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Mode.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

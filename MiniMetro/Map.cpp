@@ -48,7 +48,7 @@ void Map::RemoveAdjacentRiver() {
 	t.push_back(river[0]);
 	for (int i = 1; i < river.size(); i++) {
 		int len = t.size() - 1;
-		if (abs(river[i].first - t[len].first) <= 6 && abs(river[i].second - t[len].second) <= 6)
+		if (abs(river[i].first - t[len].first) <= 3 && abs(river[i].second - t[len].second) <= 3)
 			continue;
 		t.push_back(river[i]);
 	}
@@ -144,7 +144,7 @@ void Map::DrawRiver() {
 	mu_map_diver.lock();
 	for (auto i : river) {
 		setfillcolor(RGB(174, 220, 252));
-		solidcircle(i.first, i.second, 3);
+		solidcircle(i.first, i.second, 2);
 	}
 	mu_map_diver.unlock();
 	LOG4CPLUS_DEBUG(myLoger->rootLog, "river is successfully drawn");

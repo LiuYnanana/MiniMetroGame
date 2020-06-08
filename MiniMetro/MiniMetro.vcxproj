@@ -151,6 +151,7 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapData.cpp" />
+    <ClCompile Include="Mode.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="MyDeque.cpp" />
     <ClCompile Include="MyLogger.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapData.h" />
+    <ClInclude Include="Mode.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="MyDeque.h" />
     <ClInclude Include="MyLogger.h" />

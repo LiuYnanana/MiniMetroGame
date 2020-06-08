@@ -19,6 +19,7 @@
 #include "Mouse.h"
 #include "StartGame.h"
 #include "City.h"
+#include "Mode.h"
 std::mutex mu_draw;  
 bool end;
 
@@ -34,20 +35,39 @@ void init() {
 	City city;
 	City* p_city = &city;
 
-	p_start_game->DrawStartGame();
-	bool start = p_start_game->GetSelectGame();
+	start_game.DrawStartGame();
+	bool start = start_game.GetSelectGame();
 	std::string select_city;
 	cleardevice();
-	p_city->DrawCity();
-	select_city = p_city->SelectCity();
-	cleardevice();
 	if (!start) {
+		cleardevice();
+		city.DrawRankCity();
+		select_city = city.SelectRankCity();
+		cleardevice();
 		Rank rank;
 		rank.GetRank(select_city + "_rank");
 		rank.DrawRank();
 		rank.ExitRank();
 	}
 	else {
+		Mode mode;
+		mode.DrawMode();
+		int game_diff = mode.SelectMode();
+		cleardevice();
+		if (game_diff == 0) {
+			city.DrawEasyCity();
+			select_city = city.SelectEasyCity();
+		}
+		else if (game_diff == 1) {
+			city.DrawMidCity();
+			select_city = city.SelectMidCity();
+		}
+		else if (game_diff == 2) {
+			city.DrawHardCity();
+			select_city = city.SelectHardCity();
+		}
+		cleardevice();
+
 		MyLogger* myLoger;
 		myLoger = MyLogger::GetInstance();
 
